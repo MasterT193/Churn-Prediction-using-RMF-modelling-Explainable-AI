@@ -43,6 +43,10 @@ The application will open in your browser at `http://localhost:8501`
 - Streamlit
 - Machine Learning Libraries (scikit-learn, pandas, etc.)
 
+## Continuous Integration
+
+![CI](https://github.com/MasterT193/Churn-Prediction-using-RMF-modelling-Explainable-AI/actions/workflows/ci.yml/badge.svg)
+
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
