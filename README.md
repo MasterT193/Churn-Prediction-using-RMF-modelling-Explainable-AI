@@ -17,6 +17,8 @@ git clone <your-github-repo-url>
 cd Major_Web
 ```
 
+Note: when cloning or deploying from GitHub, use the repository root URL (e.g. `https://github.com/<user>/<repo>`). A GitHub folder URL like `.../tree/main/churn_prediction_app` is not a valid repository URL.
+
 2. Create a virtual environment:
 ```bash
 python -m venv venv
@@ -42,10 +44,6 @@ The application will open in your browser at `http://localhost:8501`
 - Python
 - Streamlit
 - Machine Learning Libraries (scikit-learn, pandas, etc.)
-
-## Continuous Integration
-
-![CI](https://github.com/MasterT193/Churn-Prediction-using-RMF-modelling-Explainable-AI/actions/workflows/ci.yml/badge.svg)
 
 ## License
 

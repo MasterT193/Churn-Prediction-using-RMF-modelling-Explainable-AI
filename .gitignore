@@ -43,3 +43,13 @@ Thumbs.db
 .streamlit/
 *.pyc
 .cache/
+
+# Local app databases
+*.db
+
+# Large datasets (keep out of repo for Streamlit Cloud)
+/online_retail_II.csv
+/online_retail_II.xlsx
+/WA_Fn-UseC_-Telco-Customer-Churn.csv
+/churn_prediction_app/online_retail_II.csv
+/churn_prediction_app/telco_churn.csv
