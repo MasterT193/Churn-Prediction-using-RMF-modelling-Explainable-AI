@@ -116,6 +116,30 @@ st.markdown(
         animation: glowPulse 16s ease-in-out infinite;
         z-index: 4;
     }
+    .deploy-banner {
+        position: fixed;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: rgba(10, 16, 36, 0.75);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 12px 28px rgba(5, 10, 26, 0.35), 0 0 18px rgba(59, 130, 246, 0.18);
+        font-size: 14px;
+        color: rgba(226, 232, 240, 0.9);
+        letter-spacing: 0.01em;
+    }
+    .deploy-banner a {
+        color: #93C5FD;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .deploy-banner a:hover {
+        color: #BFDBFE;
+    }
     @keyframes baseDrift {
         0% { transform: translate3d(-4%, 0%, 0) scale(1.06); }
         50% { transform: translate3d(4%, -3%, 0) scale(1.06); }
@@ -167,15 +191,57 @@ st.markdown(
         height: 10px;
         border-radius: 999px;
         background: #FF6A00;
-        box-shadow: 0 0 12px rgba(255,106,0,0.8);
+        box-shadow: 0 0 14px rgba(255,106,0,0.9), 0 0 22px rgba(59,130,246,0.45);
     }
     .ui-illustration {
-        box-shadow: 0 20px 40px rgba(5,10,26,0.35);
-        animation: floaty 10s ease-in-out infinite;
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        box-shadow: 0 18px 42px rgba(5, 10, 26, 0.28), 0 0 22px rgba(59, 130, 246, 0.18), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+        padding: 22px;
+        backdrop-filter: blur(12px);
+        animation: chartFloat 11s ease-in-out infinite;
+        transition: transform 250ms ease, box-shadow 250ms ease;
+        position: relative;
+        overflow: hidden;
     }
-    @keyframes floaty {
+    .ui-illustration::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(251, 146, 60, 0.08));
+        opacity: 0.6;
+        pointer-events: none;
+    }
+    .ui-illustration > * {
+        position: relative;
+        z-index: 1;
+    }
+    .ui-illustration:hover {
+        transform: translate3d(0, -6px, 0);
+        box-shadow: 0 22px 50px rgba(5, 10, 26, 0.32), 0 0 26px rgba(59, 130, 246, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    }
+    .ui-illustration svg .bar {
+        transform-origin: center bottom;
+        animation: barGrow 1.3s ease-out both;
+        filter: drop-shadow(0 10px 12px rgba(6, 10, 28, 0.45));
+    }
+    .ui-illustration svg .bar-glow {
+        filter: blur(10px);
+        opacity: 0.6;
+    }
+    .ui-illustration svg .line-graph {
+        stroke: rgba(255, 255, 255, 0.9);
+        stroke-width: 3.5;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.35));
+    }
+    @keyframes chartFloat {
         0%, 100% { transform: translate3d(0, 0, 0); }
-        50% { transform: translate3d(0, -8px, 0); }
+        50% { transform: translate3d(0, -10px, 0); }
+    }
+    @keyframes barGrow {
+        0% { transform: scaleY(0.2); opacity: 0.6; }
+        100% { transform: scaleY(1); opacity: 1; }
     }
     .ui-card {
         background: rgba(10,20,50,0.65);
@@ -425,12 +491,13 @@ st.markdown(
         box-shadow: 0 8px 16px rgba(34,197,94,0.45);
     }
     .ui-root .ui-illustration {
-        border-radius: var(--radius-lg);
-        background: rgba(255,255,255,0.18);
-        border: 1px solid rgba(255,255,255,0.45);
-        box-shadow: var(--shadow-soft);
-        padding: var(--space-3);
-        animation: uiFloat 9s ease-in-out infinite;
+        border-radius: 28px;
+        background: rgba(10, 16, 36, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: 0 30px 70px rgba(5, 10, 26, 0.45), 0 0 24px rgba(59, 130, 246, 0.25);
+        padding: 22px;
+        backdrop-filter: blur(18px);
+        animation: chartFloat 11s ease-in-out infinite;
     }
     .ui-root .ui-card {
         background: rgba(255,255,255,0.85);
@@ -547,9 +614,9 @@ st.markdown(
        GALAXY LOGIN UI (AUTH MODE)
        ========================= */
     .auth-mode .stApp {
-        background: linear-gradient(135deg, #0B1F6A 0%, #1D4ED8 22%, #7C3AED 42%, #EC4899 58%, #F97316 76%, #22D3EE 100%);
-        background-size: 220% 220%;
-        animation: premiumShift 26s ease-in-out infinite;
+        background: linear-gradient(135deg, #0B1B4A 0%, #1E3A8A 28%, #5B21B6 52%, #7C3AED 68%, #F97316 100%);
+        background-size: 240% 240%;
+        animation: premiumShift 28s ease-in-out infinite;
         position: relative;
         overflow: hidden;
     }
@@ -559,24 +626,26 @@ st.markdown(
         inset: -15% 0 0 0;
         pointer-events: none;
         background-image:
-            radial-gradient(rgba(255,255,255,0.18) 1px, transparent 2px),
-            radial-gradient(rgba(255,255,255,0.12) 2px, transparent 3px),
-            radial-gradient(700px 480px at 22% 38%, rgba(59,130,246,0.5), transparent 62%),
-            radial-gradient(760px 520px at 80% 82%, rgba(251,146,60,0.38), transparent 64%);
-        background-size: 160px 160px, 240px 240px, 100% 100%, 100% 100%;
-        opacity: 0.75;
+            radial-gradient(rgba(255,255,255,0.16) 1px, transparent 2px),
+            radial-gradient(rgba(255,255,255,0.08) 2px, transparent 3px),
+            radial-gradient(620px 460px at 12% 18%, rgba(59,130,246,0.5), transparent 62%),
+            radial-gradient(720px 520px at 88% 82%, rgba(251,146,60,0.35), transparent 64%),
+            radial-gradient(520px 420px at 92% 10%, rgba(124,58,237,0.35), transparent 60%);
+        background-size: 180px 180px, 280px 280px, 100% 100%, 100% 100%, 100% 100%;
+        opacity: 0.78;
         transform: translate3d(0, 0, 0);
-        animation: starDrift 60s linear infinite, nebulaPulse 18s ease-in-out infinite;
+        animation: starDrift 64s linear infinite, nebulaPulse 20s ease-in-out infinite;
     }
     .auth-mode .stApp::after {
         content: "";
         position: fixed;
-        inset: -20% -15% auto -15%;
-        height: 50%;
+        inset: 0;
         pointer-events: none;
         background:
-            linear-gradient(120deg, rgba(59,130,246,0) 0%, rgba(59,130,246,0.2) 45%, rgba(251,146,60,0.26) 60%, rgba(59,130,246,0) 100%);
-        opacity: 0.35;
+            linear-gradient(120deg, rgba(59,130,246,0) 0%, rgba(59,130,246,0.18) 45%, rgba(251,146,60,0.24) 60%, rgba(59,130,246,0) 100%),
+            repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 3px),
+            repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 4px);
+        opacity: 0.4;
         transform: translate3d(0, 0, 0);
         animation: streakSlide 22s ease-in-out infinite, gradientFloat 20s ease-in-out infinite;
     }
@@ -614,16 +683,29 @@ st.markdown(
     }
     .auth-mode .ui-feature-list li::before {
         background: #2563EB;
-        box-shadow: 0 0 14px rgba(59,130,246,0.7);
+        box-shadow: 0 0 16px rgba(59,130,246,0.8), 0 0 26px rgba(251,146,60,0.45);
     }
     .auth-mode .ui-illustration {
-        background: rgba(15, 23, 42, 0.65);
-        border: 1px solid rgba(59,130,246,0.35);
-        border-radius: 24px;
-        box-shadow: 0 34px 90px rgba(6, 10, 28, 0.75), 0 0 32px rgba(59,130,246,0.4);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 26px;
+        box-shadow: 0 20px 52px rgba(6, 10, 28, 0.35), 0 0 26px rgba(59,130,246,0.22), inset 0 1px 2px rgba(255, 255, 255, 0.08);
         position: relative;
-        backdrop-filter: blur(22px);
-        animation: heroFloat 10s ease-in-out infinite;
+        backdrop-filter: blur(12px);
+        animation: chartFloat 11s ease-in-out infinite;
+        overflow: hidden;
+    }
+    .auth-mode .ui-illustration::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), rgba(251, 146, 60, 0.1));
+        opacity: 0.6;
+        pointer-events: none;
+    }
+    .auth-mode .ui-illustration > * {
+        position: relative;
+        z-index: 1;
     }
     .auth-mode .ui-illustration::after {
         content: "";
@@ -640,13 +722,12 @@ st.markdown(
     .auth-mode .ui-illustration svg {
         filter: drop-shadow(0 0 12px rgba(59,130,246,0.4));
     }
-    .auth-mode .ui-illustration svg rect {
-        filter: drop-shadow(0 0 10px rgba(251,146,60,0.25));
+    .auth-mode .ui-illustration svg .bar {
+        filter: drop-shadow(0 0 12px rgba(251,146,60,0.3));
     }
-    .auth-mode .ui-illustration svg path {
+    .auth-mode .ui-illustration svg .line-graph {
         stroke-linecap: round;
         stroke-linejoin: round;
-        filter: drop-shadow(0 0 10px rgba(59,130,246,0.4));
         animation: lineGrow 2.2s ease-in-out infinite;
     }
     .auth-mode .ui-illustration svg circle {
@@ -664,43 +745,53 @@ st.markdown(
     }
     .auth-mode .ui-card .ui-card-header {
         position: relative;
-        margin: -26px -26px 18px -26px;
-        padding: 18px 22px;
-        background: rgba(8, 14, 32, 0.75);
-        background-image: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(251,146,60,0.12));
-        border-radius: 22px 22px 16px 16px;
-        border-bottom: 1px solid rgba(59,130,246,0.25);
+        margin: -26px -26px 0 -26px;
+        padding: 22px 22px;
+        background: rgba(6, 12, 28, 0.82);
+        background-image: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(251,146,60,0.14));
+        border-radius: 22px 22px 0 0;
+        border-bottom: 1px solid rgba(59,130,246,0.22);
         backdrop-filter: blur(18px);
     }
     .auth-mode .ui-card .ui-card-header::after {
         content: "";
         position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 2px;
-        background: linear-gradient(90deg, rgba(59,130,246,0.7), rgba(251,146,60,0.7));
-        opacity: 0.65;
+        inset: 0;
+        border-radius: 22px 22px 0 0;
+        box-shadow: 0 0 22px rgba(59,130,246,0.2), 0 0 32px rgba(251,146,60,0.18);
+        pointer-events: none;
     }
     .auth-mode .ui-card .ui-card-header h3 {
-        margin: 0 0 6px 0 !important;
+        margin: 0 !important;
         padding: 0 !important;
         color: #E6F0FF;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        text-shadow: 0 6px 18px rgba(59,130,246,0.35);
     }
-    .auth-mode .ui-card .ui-card-header p {
-        margin: 0 !important;
+    .auth-mode .ui-card .ui-card-body {
+        margin: 0;
+        padding: 20px 22px 22px 22px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 0 0 22px 22px;
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+    }
+    .auth-mode .ui-card .ui-card-body p {
+        margin: 0 0 14px 0 !important;
         color: rgba(226, 232, 240, 0.8);
     }
-    .auth-mode .ui-card .ui-card-header-actions {
+    .auth-mode .ui-card .ui-card-body-actions {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-top: 12px;
+        margin-top: 10px;
         color: rgba(226, 232, 240, 0.7);
         font-size: 14px;
     }
-    .auth-mode .ui-card .ui-card-header-actions .stButton>button {
+    .auth-mode .ui-card .ui-card-body-actions .stButton>button {
         padding: 0 !important;
         font-weight: 600;
         background: transparent !important;
@@ -708,12 +799,9 @@ st.markdown(
         border: none !important;
         color: #93C5FD !important;
     }
-    .auth-mode .ui-card .ui-card-header-actions .stButton>button:hover {
+    .auth-mode .ui-card .ui-card-body-actions .stButton>button:hover {
         color: #BFDBFE !important;
         transform: none !important;
-    }
-    .auth-mode .ui-card .ui-card-body {
-        margin-top: 0;
     }
     .auth-mode .ui-card::before,
     .auth-mode .ui-card::after {
@@ -885,8 +973,8 @@ st.markdown(
         transform: translateY(-1px);
     }
     .auth-mode .ui-root .stButton>button {
-        background: linear-gradient(90deg, #2563EB, #3B82F6, #FB923C) !important;
-        box-shadow: 0 18px 34px rgba(37,99,235,0.4), 0 0 22px rgba(251,146,60,0.3) !important;
+        background: linear-gradient(90deg, #F97316, #EC4899) !important;
+        box-shadow: 0 18px 34px rgba(249,115,22,0.35), 0 0 22px rgba(236,72,153,0.3) !important;
     }
     .auth-mode .ui-root .stButton>button:hover {
         transform: translateY(-2px) scale(1.01);
@@ -936,6 +1024,12 @@ st.markdown(
 
     </style>
     """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    '<div class="deploy-banner">Deploy this app on Streamlit Cloud: '
+    '<a href="https://share.streamlit.io" target="_blank" rel="noopener noreferrer">Open deployment</a></div>',
     unsafe_allow_html=True,
 )
 
@@ -1070,19 +1164,16 @@ if not st.session_state.logged_in:
                     <li>Explainable intelligence leaders can trust</li>
                 </ul>
                 <div class="ui-illustration">
-                    <svg class="float" viewBox="0 0 720 320" width="100%" height="260" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                    <svg class="hero-chart" viewBox="0 0 720 320" width="100%" height="380" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
                         <defs>
                             <linearGradient id="glassBg" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="rgba(12,20,42,0.8)" />
+                                <stop offset="0%" stop-color="rgba(12,20,42,0.85)" />
                                 <stop offset="100%" stop-color="rgba(10,20,40,0.55)" />
                             </linearGradient>
-                            <linearGradient id="orangeBars" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#FDBA74" />
-                                <stop offset="100%" stop-color="#F97316" />
-                            </linearGradient>
-                            <linearGradient id="lineGlow" x1="0" y1="0" x2="1" y2="0">
+                            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stop-color="#38BDF8" />
-                                <stop offset="100%" stop-color="#6366F1" />
+                                <stop offset="55%" stop-color="#7C3AED" />
+                                <stop offset="100%" stop-color="#F97316" />
                             </linearGradient>
                             <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stop-color="rgba(59,130,246,0.35)" />
@@ -1093,11 +1184,11 @@ if not st.session_state.logged_in:
                                 <stop offset="100%" stop-color="rgba(59,130,246,0)" />
                             </radialGradient>
                             <clipPath id="chartClip">
-                                <rect x="40" y="60" width="640" height="200" rx="18" />
+                                <rect x="34" y="56" width="652" height="210" rx="20" />
                             </clipPath>
                         </defs>
-                        <rect x="12" y="16" width="696" height="288" rx="28" fill="url(#glassBg)" stroke="rgba(99,102,241,0.45)" />
-                        <rect x="24" y="28" width="672" height="264" rx="24" fill="rgba(10,20,40,0.45)" stroke="rgba(59,130,246,0.25)" />
+                        <rect x="10" y="12" width="700" height="296" rx="30" fill="url(#glassBg)" stroke="rgba(99,102,241,0.45)" />
+                        <rect x="22" y="24" width="676" height="272" rx="26" fill="rgba(10,20,40,0.5)" stroke="rgba(59,130,246,0.25)" />
                         <g opacity="0.25">
                             <circle cx="90" cy="72" r="1" fill="#FFFFFF" />
                             <circle cx="160" cy="120" r="1" fill="#FFFFFF" />
@@ -1106,23 +1197,29 @@ if not st.session_state.logged_in:
                             <circle cx="620" cy="140" r="1" fill="#FFFFFF" />
                             <circle cx="460" cy="60" r="1" fill="#FFFFFF" />
                         </g>
-                        <g opacity="0.25">
+                        <g opacity="0.22">
                             <path d="M60 96 H660" stroke="rgba(148,163,184,0.25)" stroke-width="1" />
                             <path d="M60 136 H660" stroke="rgba(148,163,184,0.18)" stroke-width="1" />
                             <path d="M60 176 H660" stroke="rgba(148,163,184,0.18)" stroke-width="1" />
                             <path d="M60 216 H660" stroke="rgba(148,163,184,0.12)" stroke-width="1" />
                         </g>
                         <g clip-path="url(#chartClip)">
-                            <path d="M70 230 L140 200 L220 210 L300 168 L380 152 L460 188 L540 140 L640 160 L640 260 L70 260 Z" fill="url(#areaFill)" />
-                            <path d="M70 230 L140 200 L220 210 L300 168 L380 152 L460 188 L540 140 L640 160" fill="none" stroke="url(#lineGlow)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                            <circle cx="540" cy="140" r="10" fill="rgba(56,189,248,0.2)" />
-                            <circle cx="540" cy="140" r="4" fill="#93C5FD" />
-                            <rect x="90" y="188" width="34" height="72" rx="8" fill="url(#orangeBars)" />
-                            <rect x="150" y="170" width="34" height="90" rx="8" fill="url(#orangeBars)" />
-                            <rect x="210" y="196" width="34" height="64" rx="8" fill="url(#orangeBars)" />
-                            <rect x="270" y="150" width="34" height="110" rx="8" fill="url(#orangeBars)" />
-                            <rect x="330" y="162" width="34" height="98" rx="8" fill="url(#orangeBars)" />
-                            <rect x="390" y="190" width="34" height="70" rx="8" fill="url(#orangeBars)" />
+                            <path d="M70 238 L140 204 L220 214 L300 170 L380 156 L460 190 L540 142 L640 164 L640 266 L70 266 Z" fill="url(#areaFill)" />
+                            <path class="line-graph" d="M70 238 L140 204 L220 214 L300 170 L380 156 L460 190 L540 142 L640 164" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            <circle cx="540" cy="142" r="10" fill="rgba(56,189,248,0.2)" />
+                            <circle cx="540" cy="142" r="4" fill="#93C5FD" />
+                            <rect class="bar bar-glow" x="88" y="182" width="38" height="86" rx="12" fill="url(#barGradient)" style="animation-delay: 0.1s" />
+                            <rect class="bar" x="92" y="186" width="30" height="78" rx="12" fill="url(#barGradient)" style="animation-delay: 0.1s" />
+                            <rect class="bar bar-glow" x="150" y="164" width="38" height="104" rx="12" fill="url(#barGradient)" style="animation-delay: 0.2s" />
+                            <rect class="bar" x="154" y="168" width="30" height="96" rx="12" fill="url(#barGradient)" style="animation-delay: 0.2s" />
+                            <rect class="bar bar-glow" x="212" y="190" width="38" height="78" rx="12" fill="url(#barGradient)" style="animation-delay: 0.3s" />
+                            <rect class="bar" x="216" y="194" width="30" height="70" rx="12" fill="url(#barGradient)" style="animation-delay: 0.3s" />
+                            <rect class="bar bar-glow" x="274" y="142" width="38" height="126" rx="12" fill="url(#barGradient)" style="animation-delay: 0.4s" />
+                            <rect class="bar" x="278" y="146" width="30" height="118" rx="12" fill="url(#barGradient)" style="animation-delay: 0.4s" />
+                            <rect class="bar bar-glow" x="336" y="154" width="38" height="114" rx="12" fill="url(#barGradient)" style="animation-delay: 0.5s" />
+                            <rect class="bar" x="340" y="158" width="30" height="106" rx="12" fill="url(#barGradient)" style="animation-delay: 0.5s" />
+                            <rect class="bar bar-glow" x="398" y="186" width="38" height="82" rx="12" fill="url(#barGradient)" style="animation-delay: 0.6s" />
+                            <rect class="bar" x="402" y="190" width="30" height="74" rx="12" fill="url(#barGradient)" style="animation-delay: 0.6s" />
                         </g>
                         <g stroke="rgba(147,197,253,0.5)" stroke-width="1.5">
                             <line x1="120" y1="86" x2="180" y2="120" />
@@ -1151,27 +1248,11 @@ if not st.session_state.logged_in:
     with col2:
         st.markdown('<div class="ui-card">', unsafe_allow_html=True)
         st.markdown('<div class="ui-card-header">', unsafe_allow_html=True)
-        st.markdown('<h3>Welcome back</h3>', unsafe_allow_html=True)
-        st.markdown('<p>Log in to your churn intelligence workspace.</p>', unsafe_allow_html=True)
-        auth_mode = st.session_state.auth_mode
-
-        if auth_mode == 'Login':
-            st.markdown('<div class="ui-card-header-actions">', unsafe_allow_html=True)
-            st.markdown('<span>Not a member?</span>', unsafe_allow_html=True)
-            if st.button('Register here', key='register_link', type='secondary'):
-                st.session_state.auth_mode = 'Register'
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
-        else:
-            st.markdown('<div class="ui-card-header-actions">', unsafe_allow_html=True)
-            st.markdown('<span>Already have an account?</span>', unsafe_allow_html=True)
-            if st.button('Back to Login', key='login_link', type='secondary'):
-                st.session_state.auth_mode = 'Login'
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
-
+        st.markdown('<h3>Welcome Back</h3>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('<div class="ui-card-body">', unsafe_allow_html=True)
+        st.markdown('<p>Login to your account</p>', unsafe_allow_html=True)
+        auth_mode = st.session_state.auth_mode
 
         if auth_mode == 'Login':
             with st.form('login_form'):
@@ -1191,6 +1272,12 @@ if not st.session_state.logged_in:
                     st.error('Invalid username or password.')
 
             st.markdown('<div class="ui-link"><a href="#">Forgot password?</a></div>', unsafe_allow_html=True)
+            st.markdown('<div class="ui-card-body-actions">', unsafe_allow_html=True)
+            st.markdown('<span>Not a member?</span>', unsafe_allow_html=True)
+            if st.button('Register here', key='register_link', type='secondary'):
+                st.session_state.auth_mode = 'Register'
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
         else:
             with st.form('register_form'):
                 reg_full_name = st.text_input('Full Name')
@@ -1214,6 +1301,13 @@ if not st.session_state.logged_in:
                         st.success(msg)
                     else:
                         st.error(msg)
+
+            st.markdown('<div class="ui-card-body-actions">', unsafe_allow_html=True)
+            st.markdown('<span>Already have an account?</span>', unsafe_allow_html=True)
+            if st.button('Back to Login', key='login_link', type='secondary'):
+                st.session_state.auth_mode = 'Login'
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
