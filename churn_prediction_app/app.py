@@ -122,7 +122,7 @@ st.markdown(
         left: 50%;
         transform: translateX(-50%);
         z-index: 9999;
-        padding: 10px 18px;
+        padding: 10px 16px;
         border-radius: 999px;
         background: rgba(10, 16, 36, 0.75);
         border: 1px solid rgba(148, 163, 184, 0.3);
@@ -131,14 +131,27 @@ st.markdown(
         font-size: 14px;
         color: rgba(226, 232, 240, 0.9);
         letter-spacing: 0.01em;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
     }
-    .deploy-banner a {
-        color: #93C5FD;
+    .deploy-banner .deploy-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #F97316, #EC4899);
+        color: #FFFFFF;
         font-weight: 600;
         text-decoration: none;
+        box-shadow: 0 10px 18px rgba(249, 115, 22, 0.35);
+        transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
     }
-    .deploy-banner a:hover {
-        color: #BFDBFE;
+    .deploy-banner .deploy-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 24px rgba(236, 72, 153, 0.35);
+        filter: brightness(1.05);
     }
     @keyframes baseDrift {
         0% { transform: translate3d(-4%, 0%, 0) scale(1.06); }
@@ -1028,8 +1041,8 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="deploy-banner">Deploy this app on Streamlit Cloud: '
-    '<a href="https://share.streamlit.io" target="_blank" rel="noopener noreferrer">Open deployment</a></div>',
+    '<div class="deploy-banner"><span>Deploy this app</span>'
+    '<a class="deploy-button" href="https://share.streamlit.io" target="_blank" rel="noopener noreferrer">Deploy</a></div>',
     unsafe_allow_html=True,
 )
 
