@@ -24,37 +24,916 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
-st.set_page_config(page_title='Customer Churn Prediction', page_icon='📊', layout='wide')
+st.set_page_config(
+    page_title='Customer Churn Prediction',
+    page_icon='📊',
+    layout='wide',
+    initial_sidebar_state='expanded',
+)
 sns.set_theme(style='whitegrid', palette='deep')
 
 st.markdown(
     """
     <style>
-    .stApp { background-color: #FFFFFF; }
-    [data-testid="stSidebar"] { background-color: #FFFFFF; }
-    h1, h2, h3, h4 { color: #111827; }
-    .stButton>button {
-        background-color: #4F46E5;
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    /* Reset Streamlit chrome */
+    [data-testid="stToolbar"], footer, header, [data-testid="stDecoration"] { display: none !important; }
+    .block-container { padding: 0 3.6rem 2.8rem 3.6rem; max-width: 100% !important; }
+    body { background: transparent; }
+    /* Background */
+    .stApp {
+        background: #060B1F;
+        font-family: 'Poppins', sans-serif;
         color: #FFFFFF;
-        border: 0;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
+        min-height: 100vh;
     }
-    .stTabs [role="tab"] {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 6px;
-        margin-right: 6px;
+    .bg-layer {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(1.06);
+        will-change: transform, opacity;
     }
-    .stTabs [role="tab"][aria-selected="true"] {
-        background: #EEF2FF;
-        border-color: #C7D2FE;
+    .auth-mode .bg-layer { opacity: 1; }
+    .bg-base {
+        background: linear-gradient(-45deg, #050914 0%, #0B1F6A 20%, #1D4ED8 40%, #3B82F6 55%, #F97316 78%, #FF7A1A 100%);
+        background-size: 400% 400%;
+        animation: baseDrift 20s ease-in-out infinite;
+        z-index: 0;
     }
-    .stMetric {
-        background: #F8FAFC;
-        padding: 0.75rem;
+    .bg-base::before,
+    .bg-base::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.5;
+        transform: translate3d(0, 0, 0) scale(1.08);
+        animation: baseGlow 26s ease-in-out infinite;
+    }
+    .bg-base::before {
+        background: radial-gradient(800px 600px at 20% 20%, rgba(56,189,248,0.18), transparent 60%);
+    }
+    .bg-base::after {
+        background: radial-gradient(900px 700px at 80% 80%, rgba(249,115,22,0.16), transparent 60%);
+        animation-delay: -8s;
+    }
+    .bg-grid {
+        opacity: 0.1;
+        background-image:
+            linear-gradient(rgba(56,189,248,0.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(56,189,248,0.12) 1px, transparent 1px);
+        background-size: 60px 60px;
+        transform: skewY(-8deg) scale(1.1);
+        animation: gridDrift 30s linear infinite;
+        z-index: 1;
+    }
+    .bg-particles {
+        opacity: 0.12;
+        background-image:
+            radial-gradient(rgba(255,255,255,0.4) 1px, transparent 2px),
+            radial-gradient(rgba(56,189,248,0.35) 1px, transparent 2px),
+            radial-gradient(rgba(249,115,22,0.3) 1.5px, transparent 3px);
+        background-size: 140px 140px, 220px 220px, 320px 320px;
+        filter: blur(0.6px);
+        animation: particleFloat 36s ease-in-out infinite;
+        z-index: 2;
+    }
+    .bg-wave {
+        opacity: 0.12;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='220' viewBox='0 0 1200 220'%3E%3Cpath d='M0 110 C200 40 400 180 600 110 C800 40 1000 180 1200 110' fill='none' stroke='rgba(56,189,248,0.55)' stroke-width='3'/%3E%3Cpath d='M0 160 C240 90 480 210 720 160 C960 90 1080 210 1200 160' fill='none' stroke='rgba(249,115,22,0.45)' stroke-width='2'/%3E%3C/svg%3E");
+        background-repeat: repeat-x;
+        background-size: 1200px 220px;
+        animation: waveSlide 34s linear infinite;
+        z-index: 3;
+    }
+    .bg-glow {
+        opacity: 0.9;
+        background:
+            radial-gradient(520px at 8% 12%, rgba(56,189,248,0.45), transparent 60%),
+            radial-gradient(520px at 92% 88%, rgba(249,115,22,0.4), transparent 60%);
+        animation: glowPulse 16s ease-in-out infinite;
+        z-index: 4;
+    }
+    @keyframes baseDrift {
+        0% { transform: translate3d(-4%, 0%, 0) scale(1.06); }
+        50% { transform: translate3d(4%, -3%, 0) scale(1.06); }
+        100% { transform: translate3d(-4%, 0%, 0) scale(1.06); }
+    }
+    @keyframes baseGlow {
+        0% { transform: translate3d(0, 0, 0) scale(1.08); opacity: 0.4; }
+        50% { transform: translate3d(-2%, 1%, 0) scale(1.12); opacity: 0.6; }
+        100% { transform: translate3d(0, 0, 0) scale(1.08); opacity: 0.4; }
+    }
+    @keyframes gridDrift {
+        0% { transform: skewY(-8deg) translate3d(0, 0, 0) scale(1.1); }
+        100% { transform: skewY(-8deg) translate3d(120px, -80px, 0) scale(1.1); }
+    }
+    @keyframes particleFloat {
+        0% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(-80px, 60px, 0); }
+        100% { transform: translate3d(0, 0, 0); }
+    }
+    @keyframes waveSlide {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-400px, 0, 0); }
+    }
+    @keyframes glowPulse {
+        0%, 100% { opacity: 0.65; }
+        50% { opacity: 0.95; }
+    }
+
+    .ui-root { position: relative; z-index: 1; }
+    .ui-hero h1 {
+        background: linear-gradient(90deg, #FF2E2E, #E10600);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        text-shadow: 0 12px 28px rgba(5,10,26,0.35);
+    }
+    .ui-underline {
+        width: 140px;
+        height: 4px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #1E90FF, #FF6A00);
+        margin-bottom: 16px;
+        box-shadow: 0 0 16px rgba(30,144,255,0.55);
+    }
+    .ui-feature-list li::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #FF6A00;
+        box-shadow: 0 0 12px rgba(255,106,0,0.8);
+    }
+    .ui-illustration {
+        box-shadow: 0 20px 40px rgba(5,10,26,0.35);
+        animation: floaty 10s ease-in-out infinite;
+    }
+    @keyframes floaty {
+        0%, 100% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(0, -8px, 0); }
+    }
+    .ui-card {
+        background: rgba(10,20,50,0.65);
+        border: 1px solid rgba(30,144,255,0.35);
+        border-radius: 20px;
+        padding: 26px;
+        box-shadow: 0 22px 48px rgba(5,10,26,0.45), 0 0 18px rgba(30,144,255,0.25);
+        backdrop-filter: blur(18px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .ui-card:hover {
+        transform: translate3d(0, -2px, 0);
+        box-shadow: 0 28px 58px rgba(5,10,26,0.55), 0 0 24px rgba(30,144,255,0.3);
+    }
+    .ui-card h3 { color: #FFFFFF; }
+    .ui-card p { color: rgba(226,232,240,0.85); }
+    .ui-card input[type="text"],
+    .ui-card input[type="password"] {
+        background: rgba(10,20,40,0.72) !important;
+        border-radius: 14px !important;
+        border: 1px solid rgba(148,163,184,0.35) !important;
+        color: #E2E8F0 !important;
+        box-shadow: inset 0 0 0 1px rgba(8,18,38,0.45);
+        caret-color: #FF6A00;
+        transition: box-shadow 0.3s ease, transform 0.3s ease, border 0.3s ease;
+    }
+    .ui-card input[type="text"]:focus,
+    .ui-card input[type="password"]:focus {
+        border-color: rgba(30,144,255,0.8) !important;
+        box-shadow: 0 0 0 3px rgba(30,144,255,0.25);
+        transform: translate3d(0, -1px, 0);
+    }
+    .ui-card .stButton>button {
+        background: linear-gradient(90deg, #1E90FF, #FF6A00) !important;
+        border: none !important;
+        box-shadow: 0 14px 26px rgba(30,144,255,0.35) !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+    }
+    .ui-card .stButton>button:hover {
+        transform: translate3d(0, -2px, 0) !important;
+        box-shadow: 0 20px 34px rgba(30,144,255,0.45) !important;
+        filter: brightness(1.08);
+    }
+    /* Sidebar and metrics */
+    [data-testid="stSidebar"] {
+        background: rgba(255,255,255,0.92);
+        color: #0F172A;
+        border-right: 1px solid rgba(226,232,240,0.9);
+        box-shadow: 18px 0 36px rgba(15,23,42,0.08);
+    }
+    [data-testid="stSidebar"] .block-container { padding: 2.2rem 1.4rem 2rem 1.4rem; }
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
+        color: #0F172A;
+        letter-spacing: -0.01em;
+    }
+    [data-testid="stSidebar"] h1 { font-size: 22px; margin-bottom: 0.5rem; }
+    [data-testid="stSidebar"] h2 { font-size: 18px; margin-top: 1.4rem; }
+    [data-testid="stSidebar"] h3 { font-size: 16px; margin-top: 1.2rem; }
+    [data-testid="stSidebar"] .stMarkdown p { color: #475569; }
+    [data-testid="stSidebar"] [data-testid="stAlert"] {
+        border-radius: 14px;
+        border: 1px solid rgba(226,232,240,0.9);
+        box-shadow: 0 10px 24px rgba(30,58,138,0.08);
+    }
+    [data-testid="stSidebar"] [data-testid="stAlert"] > div { color: #0F172A; }
+    [data-testid="stSidebar"] .stButton>button {
+        width: 100%;
+        border-radius: 14px;
+        background: linear-gradient(90deg, #0EA5E9, #2563EB, #7C3AED);
+        color: #FFFFFF;
+        font-weight: 700;
+        border: none;
+        box-shadow: 0 12px 24px rgba(37,99,235,0.18);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    [data-testid="stSidebar"] .stButton>button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 16px 30px rgba(37,99,235,0.24);
+    }
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] {
+        background: #0F172A;
+        border-radius: 16px;
+        padding: 14px;
+        border: 1px solid rgba(148,163,184,0.35);
+        color: #E2E8F0;
+        box-shadow: 0 18px 30px rgba(15,23,42,0.2);
+    }
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {
+        color: #E2E8F0;
+    }
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button {
         border-radius: 12px;
+        background: rgba(255,255,255,0.12);
+        color: #E2E8F0;
+        border: 1px solid rgba(255,255,255,0.25);
     }
+    [data-testid="stSidebar"] hr { border-color: rgba(226,232,240,0.8); }
+    .stMetric { background: rgba(255,255,255,0.95); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(226,232,240,0.8); box-shadow: 0 8px 18px rgba(30,58,138,0.12); color: #0F172A; }
+    .stMetric [data-testid="stMetricLabel"] { color: #0F172A; font-weight: 600; }
+    .stMetric [data-testid="stMetricValue"] { color: #0B1B3F; font-weight: 700; }
+    section.main > div { padding-top: 12px; }
+
+    /* =========================
+       FAANG UI SYSTEM OVERRIDE
+       ========================= */
+    .bg-layer { display: none !important; }
+    .stApp {
+        background: linear-gradient(135deg, #0B1F6A 0%, #1D4ED8 32%, #7C3AED 68%, #F97316 100%);
+        background-size: 240% 240%;
+        animation: gradientShift 20s ease infinite;
+    }
+    .stApp::before,
+    .stApp::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+    }
+    .stApp::before {
+        background-image:
+            radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
+            radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
+        background-size: 24px 24px, 64px 64px;
+        background-position: 0 0, 12px 18px;
+        opacity: 0.35;
+        animation: dotsDrift 22s linear infinite;
+    }
+    .stApp::after {
+        background:
+            radial-gradient(520px at 10% 14%, rgba(255,255,255,0.45), transparent 60%),
+            radial-gradient(520px at 88% 12%, rgba(255,255,255,0.35), transparent 60%),
+            radial-gradient(640px at 82% 78%, rgba(255,255,255,0.28), transparent 65%);
+        opacity: 0.85;
+        animation: glowPulse 14s ease-in-out infinite;
+    }
+    .orb {
+        position: fixed;
+        width: 340px;
+        height: 340px;
+        border-radius: 50%;
+        filter: blur(70px);
+        opacity: 0.4;
+        z-index: 0;
+        animation: orbFloat 20s ease-in-out infinite;
+        pointer-events: none;
+    }
+    .orb-1 { top: -60px; left: 8%; background: rgba(59,130,246,0.55); }
+    .orb-2 { bottom: -80px; right: 10%; background: rgba(249,115,22,0.45); animation-delay: -6s; }
+    .orb-3 { top: 30%; right: 40%; background: rgba(124,58,237,0.45); animation-delay: -12s; }
+
+    /* Layer 1 - Reset */
+    .ui-root, .ui-root * {
+        box-shadow: none;
+        text-shadow: none;
+    }
+    .ui-root *::before,
+    .ui-root *::after {
+        content: none;
+    }
+
+    /* Layer 2 - Design Tokens */
+    .ui-root {
+        --color-ink: #0F172A;
+        --color-muted: rgba(15,23,42,0.7);
+        --color-white: #FFFFFF;
+        --color-primary: #2563EB;
+        --color-accent: #9333EA;
+        --color-warm: #F97316;
+        --gradient-hero: linear-gradient(135deg, #0B1F6A 0%, #1D4ED8 32%, #7C3AED 68%, #F97316 100%);
+        --radius-sm: 10px;
+        --radius-md: 12px;
+        --radius-lg: 24px;
+        --shadow-soft: 0 18px 42px rgba(15,23,42,0.2);
+        --shadow-strong: 0 26px 60px rgba(15,23,42,0.28);
+        --space-1: 8px;
+        --space-2: 12px;
+        --space-3: 16px;
+        --space-4: 20px;
+        --space-5: 28px;
+        --type-xl: 56px;
+        --type-md: 18px;
+        --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+        --duration-fast: 180ms;
+        --duration-slow: 1200ms;
+        color: var(--color-white);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Layer 3 - Layout System */
+    .ui-root .ui-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: var(--space-5);
+        align-items: center;
+        min-height: 100vh;
+    }
+    @media (max-width: 980px) {
+        .ui-root .ui-grid { grid-template-columns: 1fr; min-height: auto; padding-top: 6vh; }
+    }
+
+    /* Layer 4 - Component System */
+    .ui-root .ui-hero {
+        animation: uiFadeUp var(--duration-slow) var(--ease-standard) both;
+    }
+    .ui-root .ui-hero h1 {
+        font-size: var(--type-xl);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: var(--space-2);
+        line-height: 1.04;
+        text-shadow: 0 12px 28px rgba(5,10,26,0.35);
+    }
+    .ui-root .ui-hero p {
+        font-size: var(--type-md);
+        font-weight: 500;
+        color: rgba(255,255,255,0.9);
+        margin-bottom: var(--space-4);
+    }
+    .ui-root .ui-feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 var(--space-4) 0;
+        display: grid;
+        gap: var(--space-2);
+    }
+    .ui-root .ui-feature-list li {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        color: rgba(255,255,255,0.95);
+        font-weight: 400;
+    }
+    .ui-root .ui-feature-list li::before {
+        content: "✔";
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #22C55E;
+        color: #FFFFFF;
+        font-size: 12px;
+        box-shadow: 0 8px 16px rgba(34,197,94,0.45);
+    }
+    .ui-root .ui-illustration {
+        border-radius: var(--radius-lg);
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.45);
+        box-shadow: var(--shadow-soft);
+        padding: var(--space-3);
+        animation: uiFloat 9s ease-in-out infinite;
+    }
+    .ui-root .ui-card {
+        background: rgba(255,255,255,0.85);
+        border: 1px solid rgba(255,255,255,0.55);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        box-shadow: var(--shadow-strong);
+        backdrop-filter: blur(14px);
+        animation: uiCardFloat 6s ease-in-out infinite;
+    }
+    .ui-root .ui-card h3 {
+        color: var(--color-ink);
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: var(--space-1);
+    }
+    .ui-root .ui-card p {
+        color: var(--color-muted);
+        margin-bottom: var(--space-3);
+    }
+    .ui-root input[type="text"],
+    .ui-root input[type="password"] {
+        background: #F1F5F9 !important;
+        border-radius: var(--radius-md) !important;
+        border: 1px solid rgba(148,163,184,0.6) !important;
+        color: var(--color-ink) !important;
+        padding-left: 44px !important;
+        transition: box-shadow var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
+    }
+    .ui-root input[type="text"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%232563EB' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='4.5' width='15' height='11' rx='2.5'/%3E%3Cpath d='M3.5 7.5 10 11l6.5-3.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 14px center; background-size: 18px; }
+    .ui-root input[type="password"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%232563EB' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='8' width='14' height='9' rx='2.5'/%3E%3Cpath d='M7 8V6a3 3 0 0 1 6 0v2'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 14px center; background-size: 18px; }
+    .ui-root input[type="text"]:focus,
+    .ui-root input[type="password"]:focus {
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.25) !important;
+        transform: translateY(-1px);
+    }
+    .ui-root .stButton>button {
+        background: linear-gradient(90deg, #2563EB, #9333EA, #F97316) !important;
+        background-size: 200% 200% !important;
+        border-radius: 14px !important;
+        box-shadow: 0 12px 28px rgba(30,58,138,0.2) !important;
+        transition: transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+        animation: buttonFlow 10s ease infinite;
+    }
+    .ui-root .stButton>button:hover {
+        transform: translateY(-2px) scale(1.01);
+        box-shadow: 0 16px 32px rgba(30,58,138,0.26) !important;
+    }
+    .ui-root .ui-link {
+        text-align: right;
+        margin-top: -2px;
+        margin-bottom: 12px;
+    }
+    .ui-root .ui-link a,
+    .ui-root .ui-register a {
+        color: #475569;
+        text-decoration: none;
+        position: relative;
+    }
+    .ui-root .ui-link a::after,
+    .ui-root .ui-register a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 0%;
+        height: 2px;
+        background: #2563EB;
+        transition: width var(--duration-fast) var(--ease-standard);
+    }
+    .ui-root .ui-link a:hover::after,
+    .ui-root .ui-register a:hover::after { width: 100%; }
+    .ui-root .ui-register { text-align: center; color: #475569; font-weight: 500; }
+
+    /* Layer 5 - Motion System */
+    @keyframes uiFadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes uiFloat {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(18px); }
+        100% { transform: translateY(0px); }
+    }
+    @keyframes uiCardFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+    }
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    @keyframes dotsDrift {
+        0% { background-position: 0 0, 12px 18px; }
+        100% { background-position: 80px 120px, 60px 100px; }
+    }
+    @keyframes glowPulse {
+        0%, 100% { opacity: 0.75; }
+        50% { opacity: 0.95; }
+    }
+    @keyframes orbFloat {
+        0% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(40px, -30px, 0); }
+        100% { transform: translate3d(0, 0, 0); }
+    }
+    @keyframes buttonFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* =========================
+       GALAXY LOGIN UI (AUTH MODE)
+       ========================= */
+    .auth-mode .stApp {
+        background: linear-gradient(135deg, #0B1F6A 0%, #1D4ED8 22%, #7C3AED 42%, #EC4899 58%, #F97316 76%, #22D3EE 100%);
+        background-size: 220% 220%;
+        animation: premiumShift 26s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+    }
+    .auth-mode .stApp::before {
+        content: "";
+        position: fixed;
+        inset: -15% 0 0 0;
+        pointer-events: none;
+        background-image:
+            radial-gradient(rgba(255,255,255,0.18) 1px, transparent 2px),
+            radial-gradient(rgba(255,255,255,0.12) 2px, transparent 3px),
+            radial-gradient(700px 480px at 22% 38%, rgba(59,130,246,0.5), transparent 62%),
+            radial-gradient(760px 520px at 80% 82%, rgba(251,146,60,0.38), transparent 64%);
+        background-size: 160px 160px, 240px 240px, 100% 100%, 100% 100%;
+        opacity: 0.75;
+        transform: translate3d(0, 0, 0);
+        animation: starDrift 60s linear infinite, nebulaPulse 18s ease-in-out infinite;
+    }
+    .auth-mode .stApp::after {
+        content: "";
+        position: fixed;
+        inset: -20% -15% auto -15%;
+        height: 50%;
+        pointer-events: none;
+        background:
+            linear-gradient(120deg, rgba(59,130,246,0) 0%, rgba(59,130,246,0.2) 45%, rgba(251,146,60,0.26) 60%, rgba(59,130,246,0) 100%);
+        opacity: 0.35;
+        transform: translate3d(0, 0, 0);
+        animation: streakSlide 22s ease-in-out infinite, gradientFloat 20s ease-in-out infinite;
+    }
+    .auth-mode .ui-root::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            radial-gradient(rgba(255,255,255,0.14) 1px, transparent 2px),
+            radial-gradient(rgba(59,130,246,0.22) 1.5px, transparent 3px),
+            linear-gradient(rgba(59,130,246,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59,130,246,0.08) 1px, transparent 1px);
+        background-size: 200px 200px, 320px 320px, 64px 64px, 64px 64px;
+        opacity: 0.22;
+        animation: particleFloatSlow 36s ease-in-out infinite;
+        z-index: 0;
+    }
+
+    .auth-mode .ui-hero h1 {
+        font-size: 60px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        text-align: center;
+        background: linear-gradient(90deg, #FF2E2E, #E10600);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        text-shadow: 0 10px 24px rgba(8, 12, 28, 0.5);
+    }
+    .auth-mode .ui-underline {
+        background: linear-gradient(90deg, #3B82F6, #FB923C);
+        box-shadow: 0 0 18px rgba(59,130,246,0.6);
+    }
+    .auth-mode .ui-feature-list li::before {
+        background: #2563EB;
+        box-shadow: 0 0 14px rgba(59,130,246,0.7);
+    }
+    .auth-mode .ui-illustration {
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(59,130,246,0.35);
+        border-radius: 24px;
+        box-shadow: 0 34px 90px rgba(6, 10, 28, 0.75), 0 0 32px rgba(59,130,246,0.4);
+        position: relative;
+        backdrop-filter: blur(22px);
+        animation: heroFloat 10s ease-in-out infinite;
+    }
+    .auth-mode .ui-illustration::after {
+        content: "";
+        position: absolute;
+        left: 8%;
+        right: 8%;
+        bottom: 10px;
+        height: 6px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(251,146,60,0), rgba(251,146,60,0.6), rgba(251,146,60,0));
+        opacity: 0.8;
+        filter: blur(6px);
+    }
+    .auth-mode .ui-illustration svg {
+        filter: drop-shadow(0 0 12px rgba(59,130,246,0.4));
+    }
+    .auth-mode .ui-illustration svg rect {
+        filter: drop-shadow(0 0 10px rgba(251,146,60,0.25));
+    }
+    .auth-mode .ui-illustration svg path {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 0 10px rgba(59,130,246,0.4));
+        animation: lineGrow 2.2s ease-in-out infinite;
+    }
+    .auth-mode .ui-illustration svg circle {
+        animation: nodePulse 2.8s ease-in-out infinite;
+        filter: drop-shadow(0 0 10px rgba(59,130,246,0.5));
+    }
+
+    .auth-mode .ui-card {
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(59,130,246,0.35);
+        border-radius: 22px;
+        box-shadow: 0 36px 90px rgba(6, 10, 28, 0.75), 0 0 28px rgba(59,130,246,0.3);
+        backdrop-filter: blur(22px);
+        background-image: none !important;
+    }
+    .auth-mode .ui-card .ui-card-header {
+        position: relative;
+        margin: -26px -26px 18px -26px;
+        padding: 18px 22px;
+        background: rgba(8, 14, 32, 0.75);
+        background-image: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(251,146,60,0.12));
+        border-radius: 22px 22px 16px 16px;
+        border-bottom: 1px solid rgba(59,130,246,0.25);
+        backdrop-filter: blur(18px);
+    }
+    .auth-mode .ui-card .ui-card-header::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(59,130,246,0.7), rgba(251,146,60,0.7));
+        opacity: 0.65;
+    }
+    .auth-mode .ui-card .ui-card-header h3 {
+        margin: 0 0 6px 0 !important;
+        padding: 0 !important;
+        color: #E6F0FF;
+    }
+    .auth-mode .ui-card .ui-card-header p {
+        margin: 0 !important;
+        color: rgba(226, 232, 240, 0.8);
+    }
+    .auth-mode .ui-card .ui-card-header-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 12px;
+        color: rgba(226, 232, 240, 0.7);
+        font-size: 14px;
+    }
+    .auth-mode .ui-card .ui-card-header-actions .stButton>button {
+        padding: 0 !important;
+        font-weight: 600;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        color: #93C5FD !important;
+    }
+    .auth-mode .ui-card .ui-card-header-actions .stButton>button:hover {
+        color: #BFDBFE !important;
+        transform: none !important;
+    }
+    .auth-mode .ui-card .ui-card-body {
+        margin-top: 0;
+    }
+    .auth-mode .ui-card::before,
+    .auth-mode .ui-card::after {
+        content: none !important;
+        display: none !important;
+        background: none !important;
+        box-shadow: none !important;
+        height: 0 !important;
+    }
+    .auth-mode .stForm::before,
+    .auth-mode .stForm::after,
+    .auth-mode [data-testid="stForm"]::before,
+    .auth-mode [data-testid="stForm"]::after,
+    .auth-mode [data-testid="stContainer"]::before,
+    .auth-mode [data-testid="stContainer"]::after,
+    .auth-mode [data-testid="stVerticalBlock"]::before,
+    .auth-mode [data-testid="stVerticalBlock"]::after {
+        content: none !important;
+        display: none !important;
+        background: none !important;
+        box-shadow: none !important;
+        height: 0 !important;
+    }
+    .auth-mode .ui-card [data-baseweb="tab-list"] {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    .auth-mode .ui-card [data-baseweb="tab"] {
+        background: transparent !important;
+        border: none !important;
+    }
+    .auth-mode .ui-card [data-baseweb="tab-border"],
+    .auth-mode .ui-card [data-baseweb="tab-highlight"],
+    .auth-mode .ui-card [role="tablist"]::before,
+    .auth-mode .ui-card [role="tablist"]::after {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    .auth-mode .ui-card [role="tablist"] {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    .auth-mode .ui-card [data-testid="stTabs"],
+    .auth-mode .ui-card [data-testid="stTabs"] > div,
+    .auth-mode .ui-card [data-testid="stTabs"] > div > div {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    .auth-mode .ui-card [data-testid="stTabs"] > div {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    .auth-mode .ui-card [data-testid="stTabs"] [data-baseweb="tab-list"],
+    .auth-mode .ui-card [data-testid="stTabs"] [data-baseweb="tab-list"] > div,
+    .auth-mode .ui-card [data-testid="stTabs"] [data-baseweb="tab-list"]::before,
+    .auth-mode .ui-card [data-testid="stTabs"] [data-baseweb="tab-list"]::after {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+    .auth-mode [data-testid="stTabs"],
+    .auth-mode [data-testid="stTabs"] > div,
+    .auth-mode [data-testid="stTabs"] > div > div {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    .auth-mode [data-testid="stTabs"] [data-baseweb="tab-list"],
+    .auth-mode [data-testid="stTabs"] [role="tablist"],
+    .auth-mode [data-testid="stTabs"] [data-baseweb="tab-border"],
+    .auth-mode [data-testid="stTabs"] [data-baseweb="tab-highlight"] {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    .auth-mode [data-testid="stTabs"] [role="tablist"] {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .auth-mode [data-testid="stRadio"] > div,
+    .auth-mode [data-testid="stRadio"] div[role="radiogroup"] {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .auth-mode [data-testid="stRadio"] label,
+    .auth-mode [data-testid="stRadio"] [data-baseweb="radio"] {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    .auth-mode [data-testid="baseButton-secondary"] {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: #93C5FD !important;
+        padding: 0 !important;
+        font-weight: 600;
+    }
+    .auth-mode [data-testid="baseButton-secondary"]:hover {
+        color: #BFDBFE !important;
+        transform: none !important;
+    }
+    .auth-mode .ui-card [data-testid="stRadio"],
+    .auth-mode .ui-card [role="radiogroup"] {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .auth-mode .ui-card h3 { color: #E6F0FF; }
+    .auth-mode .ui-card p { color: rgba(226, 232, 240, 0.85); }
+    .auth-mode .ui-card:empty {
+        display: none !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: none !important;
+    }
+    .auth-mode .ui-card [data-testid="stElementContainer"]:first-child {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .auth-mode .ui-card [data-testid="stElementContainer"] {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    .auth-mode .ui-card [data-testid="stMarkdownContainer"]::before,
+    .auth-mode .ui-card [data-testid="stMarkdownContainer"]::after,
+    .auth-mode .ui-card [data-testid="stContainer"]::before,
+    .auth-mode .ui-card [data-testid="stContainer"]::after,
+    .auth-mode .ui-card [data-testid="stVerticalBlock"]::before,
+    .auth-mode .ui-card [data-testid="stVerticalBlock"]::after,
+    .auth-mode .ui-card [data-testid="stForm"]::before,
+    .auth-mode .ui-card [data-testid="stForm"]::after,
+    .auth-mode .ui-card .stForm::before,
+    .auth-mode .ui-card .stForm::after {
+        content: none !important;
+        display: none !important;
+        background: none !important;
+        box-shadow: none !important;
+        height: 0 !important;
+    }
+
+    .auth-mode .ui-root input[type="text"],
+    .auth-mode .ui-root input[type="password"] {
+        background: rgba(9, 15, 34, 0.9) !important;
+        border: 1px solid rgba(59,130,246,0.35) !important;
+        color: #E2E8F0 !important;
+        box-shadow: inset 0 0 0 1px rgba(8,18,38,0.55), 0 0 12px rgba(37,99,235,0.12);
+    }
+    .auth-mode .ui-root input[type="text"]:focus,
+    .auth-mode .ui-root input[type="password"]:focus {
+        border-color: rgba(59,130,246,0.85) !important;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.35) !important;
+        transform: translateY(-1px);
+    }
+    .auth-mode .ui-root .stButton>button {
+        background: linear-gradient(90deg, #2563EB, #3B82F6, #FB923C) !important;
+        box-shadow: 0 18px 34px rgba(37,99,235,0.4), 0 0 22px rgba(251,146,60,0.3) !important;
+    }
+    .auth-mode .ui-root .stButton>button:hover {
+        transform: translateY(-2px) scale(1.01);
+        filter: brightness(1.08);
+    }
+
+    @keyframes starDrift {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(0, 140px, 0); }
+    }
+    @keyframes nebulaPulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 0.8; }
+    }
+    @keyframes particleFloatSlow {
+        0% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(-60px, 40px, 0); }
+        100% { transform: translate3d(0, 0, 0); }
+    }
+    @keyframes streakSlide {
+        0% { transform: translate3d(0, 0, 0); opacity: 0.2; }
+        50% { transform: translate3d(6%, 0, 0); opacity: 0.4; }
+        100% { transform: translate3d(0, 0, 0); opacity: 0.2; }
+    }
+    @keyframes gradientFloat {
+        0% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(-3%, 2%, 0); }
+        100% { transform: translate3d(0, 0, 0); }
+    }
+    @keyframes heroFloat {
+        0%, 100% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(0, -8px, 0); }
+    }
+    @keyframes premiumShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    @keyframes lineGrow {
+        0%, 100% { stroke-dasharray: 0 400; opacity: 0.8; }
+        50% { stroke-dasharray: 400 0; opacity: 1; }
+    }
+    @keyframes nodePulse {
+        0%, 100% { transform: scale(1); opacity: 0.85; }
+        50% { transform: scale(1.12); opacity: 1; }
+    }
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -165,53 +1044,182 @@ if 'username' not in st.session_state:
     st.session_state.username = ''
 if 'full_name' not in st.session_state:
     st.session_state.full_name = ''
-
-st.title('Customer Churn Prediction System')
+if 'auth_mode' not in st.session_state:
+    st.session_state.auth_mode = 'Login'
 
 if not st.session_state.logged_in:
-    st.subheader('Login Required')
-    auth_tab1, auth_tab2 = st.tabs(['Login', 'Register'])
+    st.markdown('<script>document.body.classList.add("auth-mode");</script>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown('<div class="ui-root">', unsafe_allow_html=True)
+    st.markdown('<div class="ui-grid">', unsafe_allow_html=True)
+    col1, col2 = st.columns([1.3, 1], gap='large')
 
-    with auth_tab1:
-        with st.form('login_form'):
-            login_username = st.text_input('Username')
-            login_password = st.text_input('Password', type='password')
-            login_btn = st.form_submit_button('Login')
+    with col1:
+        st.markdown(
+            """
+            <div class="ui-hero">
+                <h1>Customer Churn Prediction System</h1>
+                <div class="ui-underline"></div>
+                <p>A premium AI platform to predict churn, reveal segments, and turn insight into action.</p>
+                <ul class="ui-feature-list">
+                    <li>Churn forecasting with real-time clarity</li>
+                    <li>Segmentation that aligns teams and outcomes</li>
+                    <li>Explainable intelligence leaders can trust</li>
+                </ul>
+                <div class="ui-illustration">
+                    <svg class="float" viewBox="0 0 720 320" width="100%" height="260" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <linearGradient id="glassBg" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="rgba(12,20,42,0.8)" />
+                                <stop offset="100%" stop-color="rgba(10,20,40,0.55)" />
+                            </linearGradient>
+                            <linearGradient id="orangeBars" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#FDBA74" />
+                                <stop offset="100%" stop-color="#F97316" />
+                            </linearGradient>
+                            <linearGradient id="lineGlow" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#38BDF8" />
+                                <stop offset="100%" stop-color="#6366F1" />
+                            </linearGradient>
+                            <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="rgba(59,130,246,0.35)" />
+                                <stop offset="100%" stop-color="rgba(59,130,246,0)" />
+                            </linearGradient>
+                            <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#93C5FD" />
+                                <stop offset="100%" stop-color="rgba(59,130,246,0)" />
+                            </radialGradient>
+                            <clipPath id="chartClip">
+                                <rect x="40" y="60" width="640" height="200" rx="18" />
+                            </clipPath>
+                        </defs>
+                        <rect x="12" y="16" width="696" height="288" rx="28" fill="url(#glassBg)" stroke="rgba(99,102,241,0.45)" />
+                        <rect x="24" y="28" width="672" height="264" rx="24" fill="rgba(10,20,40,0.45)" stroke="rgba(59,130,246,0.25)" />
+                        <g opacity="0.25">
+                            <circle cx="90" cy="72" r="1" fill="#FFFFFF" />
+                            <circle cx="160" cy="120" r="1" fill="#FFFFFF" />
+                            <circle cx="220" cy="80" r="1" fill="#FFFFFF" />
+                            <circle cx="560" cy="90" r="1" fill="#FFFFFF" />
+                            <circle cx="620" cy="140" r="1" fill="#FFFFFF" />
+                            <circle cx="460" cy="60" r="1" fill="#FFFFFF" />
+                        </g>
+                        <g opacity="0.25">
+                            <path d="M60 96 H660" stroke="rgba(148,163,184,0.25)" stroke-width="1" />
+                            <path d="M60 136 H660" stroke="rgba(148,163,184,0.18)" stroke-width="1" />
+                            <path d="M60 176 H660" stroke="rgba(148,163,184,0.18)" stroke-width="1" />
+                            <path d="M60 216 H660" stroke="rgba(148,163,184,0.12)" stroke-width="1" />
+                        </g>
+                        <g clip-path="url(#chartClip)">
+                            <path d="M70 230 L140 200 L220 210 L300 168 L380 152 L460 188 L540 140 L640 160 L640 260 L70 260 Z" fill="url(#areaFill)" />
+                            <path d="M70 230 L140 200 L220 210 L300 168 L380 152 L460 188 L540 140 L640 160" fill="none" stroke="url(#lineGlow)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                            <circle cx="540" cy="140" r="10" fill="rgba(56,189,248,0.2)" />
+                            <circle cx="540" cy="140" r="4" fill="#93C5FD" />
+                            <rect x="90" y="188" width="34" height="72" rx="8" fill="url(#orangeBars)" />
+                            <rect x="150" y="170" width="34" height="90" rx="8" fill="url(#orangeBars)" />
+                            <rect x="210" y="196" width="34" height="64" rx="8" fill="url(#orangeBars)" />
+                            <rect x="270" y="150" width="34" height="110" rx="8" fill="url(#orangeBars)" />
+                            <rect x="330" y="162" width="34" height="98" rx="8" fill="url(#orangeBars)" />
+                            <rect x="390" y="190" width="34" height="70" rx="8" fill="url(#orangeBars)" />
+                        </g>
+                        <g stroke="rgba(147,197,253,0.5)" stroke-width="1.5">
+                            <line x1="120" y1="86" x2="180" y2="120" />
+                            <line x1="180" y1="120" x2="240" y2="90" />
+                            <line x1="240" y1="90" x2="300" y2="130" />
+                            <line x1="300" y1="130" x2="360" y2="100" />
+                            <line x1="360" y1="100" x2="420" y2="128" />
+                            <line x1="420" y1="128" x2="480" y2="88" />
+                        </g>
+                        <g>
+                            <circle cx="120" cy="86" r="6" fill="url(#nodeGlow)" />
+                            <circle cx="180" cy="120" r="6" fill="url(#nodeGlow)" />
+                            <circle cx="240" cy="90" r="6" fill="url(#nodeGlow)" />
+                            <circle cx="300" cy="130" r="6" fill="url(#nodeGlow)" />
+                            <circle cx="360" cy="100" r="6" fill="url(#nodeGlow)" />
+                            <circle cx="420" cy="128" r="6" fill="url(#nodeGlow)" />
+                            <circle cx="480" cy="88" r="6" fill="url(#nodeGlow)" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        if login_btn:
-            user = authenticate_user(login_username, login_password)
-            if user:
-                st.session_state.logged_in = True
-                st.session_state.username = user[1]
-                st.session_state.full_name = user[2]
-                st.success(f'Welcome back, {user[2]}!')
+    with col2:
+        st.markdown('<div class="ui-card">', unsafe_allow_html=True)
+        st.markdown('<div class="ui-card-header">', unsafe_allow_html=True)
+        st.markdown('<h3>Welcome back</h3>', unsafe_allow_html=True)
+        st.markdown('<p>Log in to your churn intelligence workspace.</p>', unsafe_allow_html=True)
+        auth_mode = st.session_state.auth_mode
+
+        if auth_mode == 'Login':
+            st.markdown('<div class="ui-card-header-actions">', unsafe_allow_html=True)
+            st.markdown('<span>Not a member?</span>', unsafe_allow_html=True)
+            if st.button('Register here', key='register_link', type='secondary'):
+                st.session_state.auth_mode = 'Register'
                 st.rerun()
-            else:
-                st.error('Invalid username or password.')
+            st.markdown('</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="ui-card-header-actions">', unsafe_allow_html=True)
+            st.markdown('<span>Already have an account?</span>', unsafe_allow_html=True)
+            if st.button('Back to Login', key='login_link', type='secondary'):
+                st.session_state.auth_mode = 'Login'
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    with auth_tab2:
-        with st.form('register_form'):
-            reg_full_name = st.text_input('Full Name')
-            reg_username = st.text_input('Username (4-30 chars, letters/numbers/._-)')
-            reg_password = st.text_input('Password (min 8 chars, include letters and numbers)', type='password')
-            reg_confirm_password = st.text_input('Confirm Password', type='password')
-            reg_btn = st.form_submit_button('Create Account')
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="ui-card-body">', unsafe_allow_html=True)
 
-        if reg_btn:
-            if not reg_full_name.strip():
-                st.error('Full name is required.')
-            elif not valid_username(reg_username):
-                st.error('Invalid username format.')
-            elif not valid_password(reg_password):
-                st.error('Password must be at least 8 characters and include letters and numbers.')
-            elif reg_password != reg_confirm_password:
-                st.error('Passwords do not match.')
-            else:
-                ok, msg = create_user(reg_username, reg_full_name, reg_password)
-                if ok:
-                    st.success(msg)
+        if auth_mode == 'Login':
+            with st.form('login_form'):
+                login_username = st.text_input('Username')
+                login_password = st.text_input('Password', type='password')
+                login_btn = st.form_submit_button('Login')
+
+            if login_btn:
+                user = authenticate_user(login_username, login_password)
+                if user:
+                    st.session_state.logged_in = True
+                    st.session_state.username = user[1]
+                    st.session_state.full_name = user[2]
+                    st.success(f'Welcome back, {user[2]}!')
+                    st.rerun()
                 else:
-                    st.error(msg)
+                    st.error('Invalid username or password.')
+
+            st.markdown('<div class="ui-link"><a href="#">Forgot password?</a></div>', unsafe_allow_html=True)
+        else:
+            with st.form('register_form'):
+                reg_full_name = st.text_input('Full Name')
+                reg_username = st.text_input('Username (4-30 chars, letters/numbers/._-)')
+                reg_password = st.text_input('Password (min 8 chars, include letters and numbers)', type='password')
+                reg_confirm_password = st.text_input('Confirm Password', type='password')
+                reg_btn = st.form_submit_button('Create Account')
+
+            if reg_btn:
+                if not reg_full_name.strip():
+                    st.error('Full name is required.')
+                elif not valid_username(reg_username):
+                    st.error('Invalid username format.')
+                elif not valid_password(reg_password):
+                    st.error('Password must be at least 8 characters and include letters and numbers.')
+                elif reg_password != reg_confirm_password:
+                    st.error('Passwords do not match.')
+                else:
+                    ok, msg = create_user(reg_username, reg_full_name, reg_password)
+                    if ok:
+                        st.success(msg)
+                    else:
+                        st.error(msg)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.stop()
 
@@ -230,6 +1238,18 @@ st.sidebar.header('Upload Data')
 uploaded_file = st.sidebar.file_uploader('Upload your customer data (CSV)', type=['csv'])
 st.sidebar.markdown('---')
 st.sidebar.write('Developed with ❤️ using Streamlit')
+
+st.markdown('## Upload Data')
+st.caption('Use the uploader below or the sidebar to load your CSV.')
+upload_main = st.file_uploader('Upload your customer data (CSV)', type=['csv'])
+if upload_main is not None:
+    uploaded_file = upload_main
+if st.button('Logout'):
+    st.session_state.logged_in = False
+    st.session_state.username = ''
+    st.session_state.full_name = ''
+    st.rerun()
+st.markdown('---')
 
 if uploaded_file:
     data = pd.read_csv(uploaded_file)
@@ -385,4 +1405,5 @@ if uploaded_file:
         st.write('---')
         st.write('This is a demo. For production, tune clustering and RFM logic to your data.')
 else:
+    st.markdown('<script>document.body.classList.remove("auth-mode");</script>', unsafe_allow_html=True)
     st.info('Awaiting CSV file upload.')
