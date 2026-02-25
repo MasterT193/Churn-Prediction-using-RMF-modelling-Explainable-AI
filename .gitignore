@@ -43,9 +43,12 @@ Thumbs.db
 .streamlit/
 *.pyc
 .cache/
+.env
+.ipynb_checkpoints/
 
 # Local app databases
 *.db
+*.sqlite
 
 # Large datasets (keep out of repo for Streamlit Cloud)
 /online_retail_II.csv

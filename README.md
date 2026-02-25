@@ -1,6 +1,7 @@
 # Churn Prediction App
 
 A Streamlit-based application for predicting customer churn using machine learning.
+The app includes RFM (Recency, Frequency, Monetary) analysis, hybrid clustering, and SHAP explainability.
 
 ## Project Structure
 
@@ -38,6 +39,17 @@ streamlit run app.py
 ```
 
 The application will open in your browser at `http://localhost:8501`
+
+## Usage
+
+- Upload a CSV in the sidebar and map columns if names differ.
+- Select the number of clusters in the sidebar.
+- Explore tabs for RFM, distributions, clustering, churn prediction (cluster-based), and SHAP explanations.
+
+## Notes
+
+- For large files, consider sampling before upload.
+- SHAP can be slow; reduce sample size in the sidebar.
 
 ## Technologies Used
 
