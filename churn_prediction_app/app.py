@@ -199,21 +199,26 @@ st.markdown(
         box-shadow: 0 0 16px rgba(30,144,255,0.55);
     }
     .ui-feature-list li::before {
-        content: "";
-        width: 10px;
-        height: 10px;
+        content: "🚀";
+        width: 22px;
+        height: 22px;
         border-radius: 999px;
-        background: #FF6A00;
-        box-shadow: 0 0 14px rgba(255,106,0,0.9), 0 0 22px rgba(59,130,246,0.45);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(56, 189, 248, 0.2);
+        color: #FFFFFF;
+        font-size: 12px;
+        box-shadow: 0 8px 16px rgba(56,189,248,0.35);
     }
     .ui-illustration {
-        border-radius: 26px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(148, 163, 184, 0.2);
-        box-shadow: 0 18px 42px rgba(5, 10, 26, 0.28), 0 0 22px rgba(59, 130, 246, 0.18), inset 0 1px 2px rgba(255, 255, 255, 0.08);
-        padding: 22px;
-        backdrop-filter: blur(12px);
-        animation: chartFloat 11s ease-in-out infinite;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.14);
+        border: none;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16), 0 0 26px rgba(59, 130, 246, 0.2);
+        padding: 12px;
+        backdrop-filter: blur(18px);
+        animation: chartFloatSlow 10s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
         transition: transform 250ms ease, box-shadow 250ms ease;
         position: relative;
         overflow: hidden;
@@ -222,8 +227,22 @@ st.markdown(
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(251, 146, 60, 0.08));
-        opacity: 0.6;
+        background: radial-gradient(600px 360px at 18% 18%, rgba(129, 140, 248, 0.24), transparent 65%),
+                    radial-gradient(520px 320px at 82% 78%, rgba(96, 165, 250, 0.22), transparent 60%);
+        opacity: 0.75;
+        pointer-events: none;
+    }
+    .ui-illustration::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            radial-gradient(rgba(255,255,255,0.5) 1px, transparent 2px),
+            radial-gradient(rgba(147,197,253,0.45) 1px, transparent 2px);
+        background-size: 120px 120px, 180px 180px;
+        opacity: 0.25;
+        filter: blur(0.2px);
+        animation: particleDrift 12s linear infinite;
         pointer-events: none;
     }
     .ui-illustration > * {
@@ -234,27 +253,57 @@ st.markdown(
         transform: translate3d(0, -6px, 0);
         box-shadow: 0 22px 50px rgba(5, 10, 26, 0.32), 0 0 26px rgba(59, 130, 246, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.1);
     }
+    .ui-illustration svg {
+        transform: scale(1.1);
+        transform-origin: center;
+    }
     .ui-illustration svg .bar {
         transform-origin: center bottom;
-        animation: barGrow 1.3s ease-out both;
-        filter: drop-shadow(0 10px 12px rgba(6, 10, 28, 0.45));
+        animation: barWave 4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite,
+                   barPulse 3.2s ease-in-out infinite;
+        filter: drop-shadow(0 6px 12px rgba(59, 130, 246, 0.35));
     }
     .ui-illustration svg .bar-glow {
-        filter: blur(10px);
-        opacity: 0.6;
+        filter: blur(12px);
+        opacity: 0.55;
     }
     .ui-illustration svg .line-graph {
-        stroke: rgba(255, 255, 255, 0.9);
-        stroke-width: 3.5;
-        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.35));
+        stroke: rgba(224, 242, 254, 0.95);
+        stroke-width: 3.1;
+        filter: drop-shadow(0 0 12px rgba(147, 197, 253, 0.6));
+    }
+    .ui-illustration svg .line-dot {
+        filter: drop-shadow(0 0 10px rgba(147, 197, 253, 0.7));
+    }
+    .ui-illustration svg .bar-sweep {
+        opacity: 0.18;
+        mix-blend-mode: screen;
+        animation: sweepMove 4.5s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
     }
     @keyframes chartFloat {
         0%, 100% { transform: translate3d(0, 0, 0); }
         50% { transform: translate3d(0, -10px, 0); }
     }
-    @keyframes barGrow {
-        0% { transform: scaleY(0.2); opacity: 0.6; }
-        100% { transform: scaleY(1); opacity: 1; }
+    @keyframes chartFloatSlow {
+        0%, 100% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(0, -14px, 0); }
+    }
+    @keyframes barWave {
+        0%, 100% { transform: scaleY(0.82); opacity: 0.85; }
+        50% { transform: scaleY(1.08); opacity: 1; }
+    }
+    @keyframes barPulse {
+        0%, 100% { filter: drop-shadow(0 8px 14px rgba(14, 116, 144, 0.35)); }
+        50% { filter: drop-shadow(0 12px 18px rgba(96, 165, 250, 0.55)); }
+    }
+    @keyframes sweepMove {
+        0% { transform: translateX(-35%); }
+        100% { transform: translateX(35%); }
+    }
+    @keyframes particleDrift {
+        0% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(-20px, 16px, 0); }
+        100% { transform: translate3d(0, 0, 0); }
     }
     .ui-card {
         background: rgba(10,20,50,0.65);
@@ -300,28 +349,30 @@ st.markdown(
     }
     /* Sidebar and metrics */
     [data-testid="stSidebar"] {
-        background: rgba(255,255,255,0.92);
-        color: #0F172A;
-        border-right: 1px solid rgba(226,232,240,0.9);
-        box-shadow: 18px 0 36px rgba(15,23,42,0.08);
+        background: rgba(6, 10, 24, 0.85);
+        color: #E2E8F0;
+        border-right: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 18px 0 36px rgba(5, 10, 26, 0.35);
+        backdrop-filter: blur(16px);
     }
     [data-testid="stSidebar"] .block-container { padding: 2.2rem 1.4rem 2rem 1.4rem; }
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
-        color: #0F172A;
+        color: #E2E8F0;
         letter-spacing: -0.01em;
     }
     [data-testid="stSidebar"] h1 { font-size: 22px; margin-bottom: 0.5rem; }
     [data-testid="stSidebar"] h2 { font-size: 18px; margin-top: 1.4rem; }
     [data-testid="stSidebar"] h3 { font-size: 16px; margin-top: 1.2rem; }
-    [data-testid="stSidebar"] .stMarkdown p { color: #475569; }
+    [data-testid="stSidebar"] .stMarkdown p { color: rgba(226,232,240,0.7); }
     [data-testid="stSidebar"] [data-testid="stAlert"] {
         border-radius: 14px;
-        border: 1px solid rgba(226,232,240,0.9);
-        box-shadow: 0 10px 24px rgba(30,58,138,0.08);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        background: rgba(15, 23, 42, 0.6);
+        box-shadow: 0 10px 24px rgba(5, 10, 26, 0.22);
     }
-    [data-testid="stSidebar"] [data-testid="stAlert"] > div { color: #0F172A; }
+    [data-testid="stSidebar"] [data-testid="stAlert"] > div { color: #E2E8F0; }
     [data-testid="stSidebar"] .stButton>button {
         width: 100%;
         border-radius: 14px;
@@ -337,26 +388,86 @@ st.markdown(
         box-shadow: 0 16px 30px rgba(37,99,235,0.24);
     }
     [data-testid="stSidebar"] [data-testid="stFileUploader"] {
-        background: #0F172A;
+        background: rgba(10, 16, 36, 0.8);
         border-radius: 16px;
         padding: 14px;
-        border: 1px solid rgba(148,163,184,0.35);
+        border: 1px solid rgba(148, 163, 184, 0.28);
         color: #E2E8F0;
-        box-shadow: 0 18px 30px rgba(15,23,42,0.2);
+        box-shadow: 0 18px 30px rgba(5, 10, 26, 0.3);
     }
     [data-testid="stSidebar"] [data-testid="stFileUploader"] section {
         color: #E2E8F0;
     }
     [data-testid="stSidebar"] [data-testid="stFileUploader"] button {
         border-radius: 12px;
-        background: rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.08);
         color: #E2E8F0;
-        border: 1px solid rgba(255,255,255,0.25);
+        border: 1px solid rgba(255,255,255,0.2);
     }
-    [data-testid="stSidebar"] hr { border-color: rgba(226,232,240,0.8); }
-    .stMetric { background: rgba(255,255,255,0.95); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(226,232,240,0.8); box-shadow: 0 8px 18px rgba(30,58,138,0.12); color: #0F172A; }
-    .stMetric [data-testid="stMetricLabel"] { color: #0F172A; font-weight: 600; }
-    .stMetric [data-testid="stMetricValue"] { color: #0B1B3F; font-weight: 700; }
+    [data-testid="stSidebar"] hr { border-color: rgba(148, 163, 184, 0.35); }
+    .stMetric {
+        background: rgba(10, 16, 36, 0.65);
+        padding: 0.75rem;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        box-shadow: 0 18px 38px rgba(5, 10, 26, 0.35), 0 0 14px rgba(59, 130, 246, 0.12);
+        color: #E2E8F0;
+        backdrop-filter: blur(16px);
+    }
+    .stMetric [data-testid="stMetricLabel"] { color: rgba(226, 232, 240, 0.8); font-weight: 600; }
+    .stMetric [data-testid="stMetricValue"] { color: #F8FAFC; font-weight: 700; }
+    section.main h1,
+    section.main h2,
+    section.main h3 {
+        color: #E2E8F0;
+        text-shadow: 0 0 16px rgba(59, 130, 246, 0.25);
+    }
+    section.main p,
+    section.main li,
+    section.main label {
+        color: rgba(226, 232, 240, 0.85);
+    }
+    section.main [data-testid="stDataFrame"],
+    section.main [data-testid="stTable"],
+    section.main [data-testid="stPyplot"],
+    section.main [data-testid="stPlotlyChart"],
+    section.main [data-testid="stAltairChart"] {
+        background: rgba(10, 16, 36, 0.62);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 18px;
+        padding: 12px 14px;
+        box-shadow: 0 20px 42px rgba(5, 10, 26, 0.35), 0 0 16px rgba(59, 130, 246, 0.14);
+        backdrop-filter: blur(16px);
+        position: relative;
+        overflow: hidden;
+    }
+    section.main [data-testid="stPyplot"]::after,
+    section.main [data-testid="stPlotlyChart"]::after,
+    section.main [data-testid="stAltairChart"]::after {
+        content: "";
+        position: absolute;
+        inset: 6px;
+        border-radius: 14px;
+        background: linear-gradient(120deg, rgba(56,189,248,0), rgba(56,189,248,0.25), rgba(99,102,241,0.18), rgba(236,72,153,0));
+        mix-blend-mode: screen;
+        opacity: 0.35;
+        animation: chartSheen 10s ease-in-out infinite;
+        pointer-events: none;
+    }
+    section.main [data-testid="stPyplot"] img {
+        border-radius: 12px;
+        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.35));
+        animation: chartPulse 7s ease-in-out infinite;
+    }
+    section.main [data-testid="stPlotlyChart"] svg .lines path,
+    section.main [data-testid="stPlotlyChart"] svg .scatterlayer path {
+        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.45));
+    }
+    section.main [data-testid="stPlotlyChart"] svg .points path,
+    section.main [data-testid="stPlotlyChart"] svg .points circle {
+        animation: dataPointPulse 3.6s ease-in-out infinite;
+        transform-origin: center;
+    }
     section.main > div { padding-top: 12px; }
 
     /* =========================
@@ -364,34 +475,141 @@ st.markdown(
        ========================= */
     .bg-layer { display: none !important; }
     .stApp {
-        background: linear-gradient(135deg, #0B1F6A 0%, #1D4ED8 32%, #7C3AED 68%, #F97316 100%);
-        background-size: 240% 240%;
-        animation: gradientShift 20s ease infinite;
+        background:
+            radial-gradient(1200px 800px at 18% 12%, rgba(37, 64, 128, 0.28), transparent 65%),
+            radial-gradient(1000px 700px at 82% 18%, rgba(15, 23, 42, 0.55), transparent 62%),
+            radial-gradient(900px 700px at 70% 82%, rgba(76, 29, 149, 0.22), transparent 66%),
+            linear-gradient(140deg, #050814 0%, #0b1430 40%, #0a0f24 70%, #050814 100%);
+        background-size: 400% 400%;
+        animation: deepSpaceShift 25s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
     }
     .stApp::before,
     .stApp::after {
-        content: "";
+        content: none;
+    }
+    .galaxy-bg {
         position: fixed;
         inset: 0;
         pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
     }
-    .stApp::before {
+    .galaxy-layer {
+        position: absolute;
+        inset: -10% 0 0 -10%;
+        width: 120%;
+        height: 120%;
+        will-change: transform;
+        transform: translate3d(calc(var(--mx, 0) * 1px), calc(var(--my, 0) * 1px), 0);
+    }
+    .galaxy-stars-far {
+        background-image: radial-gradient(rgba(255,255,255,0.22) 1px, transparent 2px);
+        background-size: 200px 200px;
+        opacity: 0.2;
+        filter: blur(0.2px);
+        animation: starFarDrift 40s linear infinite, starsTwinkle 9s ease-in-out infinite;
+        transform: translate3d(calc(var(--mx, 0) * 2px), calc(var(--my, 0) * 2px), 0);
+    }
+    .galaxy-stars-mid {
         background-image:
-            radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
-            radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
-        background-size: 24px 24px, 64px 64px;
-        background-position: 0 0, 12px 18px;
-        opacity: 0.35;
-        animation: dotsDrift 22s linear infinite;
+            radial-gradient(rgba(255,255,255,0.5) 2px, transparent 3px),
+            radial-gradient(rgba(255,255,255,0.35) 1px, transparent 2px);
+        background-size: 160px 160px, 220px 220px;
+        opacity: 0.3;
+        filter: blur(0.3px) drop-shadow(0 0 6px rgba(255,255,255,0.35));
+        animation: starMidDrift 30s linear infinite, starsTwinkle 7s ease-in-out infinite;
+        transform: translate3d(calc(var(--mx, 0) * 4px), calc(var(--my, 0) * 4px), 0);
     }
-    .stApp::after {
+    .galaxy-stars-near {
+        background-image:
+            radial-gradient(rgba(255,255,255,0.85) 2px, transparent 3px),
+            radial-gradient(rgba(255,255,255,0.65) 3px, transparent 4px);
+        background-size: 140px 140px, 200px 200px;
+        opacity: 0.38;
+        filter: blur(0.4px) drop-shadow(0 0 8px rgba(255,255,255,0.5));
+        animation: starNearDrift 25s linear infinite, starsTwinkle 6s ease-in-out infinite;
+        transform: translate3d(calc(var(--mx, 0) * 7px), calc(var(--my, 0) * 6px), 0);
+    }
+    .galaxy-nebula {
         background:
-            radial-gradient(520px at 10% 14%, rgba(255,255,255,0.45), transparent 60%),
-            radial-gradient(520px at 88% 12%, rgba(255,255,255,0.35), transparent 60%),
-            radial-gradient(640px at 82% 78%, rgba(255,255,255,0.28), transparent 65%);
-        opacity: 0.85;
-        animation: glowPulse 14s ease-in-out infinite;
+            radial-gradient(920px 720px at 18% 28%, rgba(56, 189, 248, 0.12), transparent 66%),
+            radial-gradient(980px 740px at 78% 30%, rgba(124, 58, 237, 0.15), transparent 66%),
+            radial-gradient(1040px 760px at 70% 78%, rgba(99, 102, 241, 0.12), transparent 68%),
+            radial-gradient(820px 640px at 32% 70%, rgba(59, 130, 246, 0.1), transparent 66%),
+            radial-gradient(760px 620px at 85% 65%, rgba(14, 165, 233, 0.1), transparent 66%),
+            radial-gradient(720px 580px at 55% 20%, rgba(147, 51, 234, 0.12), transparent 64%);
+        opacity: 0.45;
+        filter: blur(2.4px);
+        animation: nebulaFloat 35s ease-in-out infinite;
+        transform: translate3d(calc(var(--mx, 0) * 3px), calc(var(--my, 0) * 3px), 0);
     }
+    .galaxy-milkyway {
+        background:
+            radial-gradient(1200px 420px at 20% 55%, rgba(255, 255, 255, 0.15), transparent 70%),
+            radial-gradient(1200px 420px at 80% 45%, rgba(191, 219, 254, 0.18), transparent 70%),
+            linear-gradient(100deg, transparent 15%, rgba(255, 255, 255, 0.12) 40%, rgba(255, 255, 255, 0.2) 50%, rgba(147, 197, 253, 0.16) 60%, transparent 85%);
+        opacity: 0.45;
+        filter: blur(1.6px);
+        mix-blend-mode: screen;
+        animation: milkyWayDrift 40s ease-in-out infinite, milkyWayShimmer 9s ease-in-out infinite;
+        transform: translate3d(calc(var(--mx, 0) * 4px), calc(var(--my, 0) * 4px), 0) rotate(-12deg) scale(1.05);
+    }
+    .galaxy-constellations {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1400' height='900' viewBox='0 0 1400 900'%3E%3Cdefs%3E%3ClinearGradient id='glow' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='rgba(147,197,253,0.55)'/%3E%3Cstop offset='100%25' stop-color='rgba(255,255,255,0.35)'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23glow)' stroke-width='1.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M120 180 L190 150 L250 210 L320 170 L380 230'/%3E%3Cpath d='M980 160 L1040 120 L1100 180 L1160 150 L1220 210'/%3E%3Cpath d='M200 620 L260 580 L320 640 L380 600 L460 660'/%3E%3Cpath d='M820 520 L880 480 L940 540 L1000 500 L1060 560'/%3E%3Cpath d='M560 320 L620 280 L700 320 L760 260 L840 300'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.7)'%3E%3Ccircle cx='120' cy='180' r='2'/%3E%3Ccircle cx='190' cy='150' r='2.4'/%3E%3Ccircle cx='250' cy='210' r='2.1'/%3E%3Ccircle cx='320' cy='170' r='2.3'/%3E%3Ccircle cx='380' cy='230' r='2'/%3E%3Ccircle cx='980' cy='160' r='2'/%3E%3Ccircle cx='1040' cy='120' r='2.5'/%3E%3Ccircle cx='1100' cy='180' r='2.2'/%3E%3Ccircle cx='1160' cy='150' r='2.3'/%3E%3Ccircle cx='1220' cy='210' r='2'/%3E%3Ccircle cx='200' cy='620' r='2'/%3E%3Ccircle cx='260' cy='580' r='2.4'/%3E%3Ccircle cx='320' cy='640' r='2.2'/%3E%3Ccircle cx='380' cy='600' r='2.4'/%3E%3Ccircle cx='460' cy='660' r='2'/%3E%3Ccircle cx='820' cy='520' r='2'/%3E%3Ccircle cx='880' cy='480' r='2.4'/%3E%3Ccircle cx='940' cy='540' r='2.2'/%3E%3Ccircle cx='1000' cy='500' r='2.4'/%3E%3Ccircle cx='1060' cy='560' r='2'/%3E%3Ccircle cx='560' cy='320' r='2'/%3E%3Ccircle cx='620' cy='280' r='2.4'/%3E%3Ccircle cx='700' cy='320' r='2.2'/%3E%3Ccircle cx='760' cy='260' r='2.4'/%3E%3Ccircle cx='840' cy='300' r='2'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: 1400px 900px;
+        opacity: 0.32;
+        mix-blend-mode: screen;
+        filter: blur(0.35px) drop-shadow(0 0 6px rgba(147,197,253,0.3));
+        animation: constellationsDrift 55s linear infinite, constellationPulse 8s ease-in-out infinite;
+        transform: translate3d(calc(var(--mx, 0) * 2px), calc(var(--my, 0) * 2px), 0);
+    }
+    .galaxy-dust {
+        background-image:
+            radial-gradient(rgba(255,255,255,0.12) 1px, transparent 2px),
+            radial-gradient(rgba(56,189,248,0.08) 1px, transparent 2px);
+        background-size: 120px 120px, 180px 180px;
+        opacity: 0.18;
+        filter: blur(0.3px);
+        animation: dustFlicker 5s ease-in-out infinite;
+        transform: translate3d(calc(var(--mx, 0) * 2px), calc(var(--my, 0) * 2px), 0);
+    }
+    .galaxy-rockets {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.22)' stroke-width='1.5'%3E%3Cpath d='M60 120 l20 -30 l20 30 -10 6 10 14 -20 -6 -20 6 10 -14z'/%3E%3Cpath d='M420 280 l18 -28 l18 28 -9 6 9 12 -18 -5 -18 5 9 -12z'/%3E%3Cpath d='M820 160 l20 -30 l20 30 -10 6 10 14 -20 -6 -20 6 10 -14z'/%3E%3Cpath d='M980 420 l16 -24 l16 24 -8 5 8 10 -16 -4 -16 4 8 -10z'/%3E%3Cpath d='M260 520 l14 -22 l14 22 -7 5 7 9 -14 -4 -14 4 7 -9z'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: 1000px 700px;
+        opacity: 0.5;
+        mix-blend-mode: screen;
+        filter: blur(0.2px) drop-shadow(0 0 10px rgba(56,189,248,0.6));
+        animation: rocketsDrift 45s linear infinite;
+        transform: translate3d(calc(var(--mx, 0) * 3px), calc(var(--my, 0) * 3px), 0);
+    }
+    .galaxy-blackhole {
+        background:
+            radial-gradient(520px 520px at 50% 45%, rgba(11,17,32,0.55), transparent 60%),
+            radial-gradient(420px 420px at 50% 45%, rgba(49,46,129,0.2), transparent 65%);
+        opacity: 0.35;
+        animation: blackholePulse 30s ease-in-out infinite;
+        transform: translate3d(calc(var(--mx, 0) * 1px), calc(var(--my, 0) * 1px), 0);
+    }
+    .comet-layer {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .comet {
+        position: absolute;
+        width: 240px;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.85), rgba(56,189,248,0.45));
+        filter: blur(0.2px) drop-shadow(0 0 8px rgba(56,189,248,0.5));
+        opacity: 0;
+        transform: translate3d(0, 0, 0) rotate(-25deg);
+    }
+    .comet.comet-1 { top: 12%; left: -30%; animation: cometFly 5s ease-in-out infinite; animation-delay: 1.5s; }
+    .comet.comet-2 { top: 40%; left: -35%; animation: cometFly 5s ease-in-out infinite; animation-delay: 4.8s; }
+    .comet.comet-3 { top: 70%; left: -40%; animation: cometFly 5s ease-in-out infinite; animation-delay: 8.2s; }
     .orb {
         position: fixed;
         width: 340px;
@@ -473,7 +691,12 @@ st.markdown(
     .ui-root .ui-hero p {
         font-size: var(--type-md);
         font-weight: 500;
-        color: rgba(255,255,255,0.9);
+        color: rgba(255,255,255,0.95);
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 10px 14px;
+        border-radius: 14px;
+        backdrop-filter: blur(6px);
         margin-bottom: var(--space-4);
     }
     .ui-root .ui-feature-list {
@@ -487,21 +710,29 @@ st.markdown(
         display: flex;
         align-items: center;
         gap: var(--space-2);
-        color: rgba(255,255,255,0.95);
+        color: rgba(255,255,255,0.97);
         font-weight: 400;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        padding: 8px 12px;
+        border-radius: 999px;
+        backdrop-filter: blur(6px);
     }
     .ui-root .ui-feature-list li::before {
-        content: "✔";
+        content: "🚀";
         width: 22px;
         height: 22px;
         border-radius: 999px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: #22C55E;
+        background: rgba(56, 189, 248, 0.2);
         color: #FFFFFF;
         font-size: 12px;
-        box-shadow: 0 8px 16px rgba(34,197,94,0.45);
+        box-shadow: 0 8px 16px rgba(56,189,248,0.35);
+    }
+    .ui-root .ui-feature-list li::after {
+        content: none;
     }
     .ui-root .ui-illustration {
         border-radius: 28px;
@@ -604,9 +835,84 @@ st.markdown(
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
+    @keyframes deepSpaceShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
     @keyframes dotsDrift {
         0% { background-position: 0 0, 12px 18px; }
         100% { background-position: 80px 120px, 60px 100px; }
+    }
+    @keyframes starsTwinkle {
+        0%, 100% { opacity: 0.28; }
+        50% { opacity: 0.6; }
+    }
+    @keyframes chartSheen {
+        0% { transform: translate3d(-12%, -8%, 0); opacity: 0.2; }
+        50% { transform: translate3d(12%, 8%, 0); opacity: 0.4; }
+        100% { transform: translate3d(-12%, -8%, 0); opacity: 0.2; }
+    }
+    @keyframes chartPulse {
+        0%, 100% { filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.28)); }
+        50% { filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.5)); }
+    }
+    @keyframes dataPointPulse {
+        0%, 100% { transform: scale(1); opacity: 0.85; }
+        50% { transform: scale(1.12); opacity: 1; }
+    }
+    @keyframes starFarDrift {
+        0% { background-position: 0 0; }
+        100% { background-position: 0 -220px; }
+    }
+    @keyframes starMidDrift {
+        0% { background-position: 0 0, 80px 60px; }
+        100% { background-position: 0 -260px, 80px -200px; }
+    }
+    @keyframes starNearDrift {
+        0% { background-position: 0 0, 120px 40px; }
+        100% { background-position: 160px -240px, 240px -140px; }
+    }
+    @keyframes nebulaFloat {
+        0% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(-2%, 1.5%, 0) scale(1.02); }
+        100% { transform: translate3d(0, 0, 0) scale(1); }
+    }
+    @keyframes milkyWayDrift {
+        0% { opacity: 0.35; transform: translate3d(-2%, 1%, 0) rotate(-12deg) scale(1.03); }
+        50% { opacity: 0.55; transform: translate3d(2%, -1%, 0) rotate(-10deg) scale(1.06); }
+        100% { opacity: 0.35; transform: translate3d(-2%, 1%, 0) rotate(-12deg) scale(1.03); }
+    }
+    @keyframes milkyWayShimmer {
+        0%, 100% { filter: blur(1.8px) brightness(1); }
+        50% { filter: blur(0.9px) brightness(1.35); }
+    }
+    @keyframes constellationsDrift {
+        0% { background-position: 0 0; }
+        100% { background-position: -240px 160px; }
+    }
+    @keyframes constellationPulse {
+        0%, 100% { opacity: 0.32; }
+        50% { opacity: 0.52; }
+    }
+    @keyframes blackholePulse {
+        0%, 100% { opacity: 0.28; }
+        50% { opacity: 0.4; }
+    }
+    @keyframes dustFlicker {
+        0%, 100% { opacity: 0.12; }
+        50% { opacity: 0.22; }
+    }
+    @keyframes rocketsDrift {
+        0% { background-position: 0 0; }
+        100% { background-position: -200px 160px; }
+    }
+    @keyframes cometFly {
+        0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-25deg); }
+        10% { opacity: 0.8; }
+        50% { opacity: 0.9; }
+        90% { opacity: 0.2; }
+        100% { opacity: 0; transform: translate3d(140vw, 40vh, 0) rotate(-25deg); }
     }
     @keyframes glowPulse {
         0%, 100% { opacity: 0.75; }
@@ -627,40 +933,18 @@ st.markdown(
        GALAXY LOGIN UI (AUTH MODE)
        ========================= */
     .auth-mode .stApp {
-        background: linear-gradient(135deg, #0B1B4A 0%, #1E3A8A 28%, #5B21B6 52%, #7C3AED 68%, #F97316 100%);
-        background-size: 240% 240%;
-        animation: premiumShift 28s ease-in-out infinite;
+        background:
+            radial-gradient(1200px 800px at 18% 12%, rgba(49, 46, 129, 0.3), transparent 65%),
+            radial-gradient(1000px 700px at 82% 18%, rgba(30, 27, 75, 0.45), transparent 62%),
+            linear-gradient(135deg, #0b1120 0%, #0f172a 35%, #1e1b4b 55%, #312e81 72%, #0b1120 100%);
+        background-size: 400% 400%;
+        animation: premiumShift 25s ease-in-out infinite;
         position: relative;
         overflow: hidden;
     }
-    .auth-mode .stApp::before {
-        content: "";
-        position: fixed;
-        inset: -15% 0 0 0;
-        pointer-events: none;
-        background-image:
-            radial-gradient(rgba(255,255,255,0.16) 1px, transparent 2px),
-            radial-gradient(rgba(255,255,255,0.08) 2px, transparent 3px),
-            radial-gradient(620px 460px at 12% 18%, rgba(59,130,246,0.5), transparent 62%),
-            radial-gradient(720px 520px at 88% 82%, rgba(251,146,60,0.35), transparent 64%),
-            radial-gradient(520px 420px at 92% 10%, rgba(124,58,237,0.35), transparent 60%);
-        background-size: 180px 180px, 280px 280px, 100% 100%, 100% 100%, 100% 100%;
-        opacity: 0.78;
-        transform: translate3d(0, 0, 0);
-        animation: starDrift 64s linear infinite, nebulaPulse 20s ease-in-out infinite;
-    }
+    .auth-mode .stApp::before,
     .auth-mode .stApp::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background:
-            linear-gradient(120deg, rgba(59,130,246,0) 0%, rgba(59,130,246,0.18) 45%, rgba(251,146,60,0.24) 60%, rgba(59,130,246,0) 100%),
-            repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 3px),
-            repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 4px);
-        opacity: 0.4;
-        transform: translate3d(0, 0, 0);
-        animation: streakSlide 22s ease-in-out infinite, gradientFloat 20s ease-in-out infinite;
+        content: none;
     }
     .auth-mode .ui-root::before {
         content: "";
@@ -699,21 +983,23 @@ st.markdown(
         box-shadow: 0 0 16px rgba(59,130,246,0.8), 0 0 26px rgba(251,146,60,0.45);
     }
     .auth-mode .ui-illustration {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(59,130,246,0.22);
-        border-radius: 26px;
-        box-shadow: 0 20px 52px rgba(6, 10, 28, 0.35), 0 0 26px rgba(59,130,246,0.22), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+        background: rgba(10, 18, 40, 0.2);
+        border: none;
+        border-radius: 30px;
+        box-shadow: 0 22px 52px rgba(6, 10, 28, 0.35), 0 0 26px rgba(99, 102, 241, 0.22);
         position: relative;
-        backdrop-filter: blur(12px);
-        animation: chartFloat 11s ease-in-out infinite;
+        backdrop-filter: blur(18px);
+        animation: chartFloatSlow 10s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
         overflow: hidden;
+        padding: 12px;
     }
     .auth-mode .ui-illustration::before {
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), rgba(251, 146, 60, 0.1));
-        opacity: 0.6;
+        background: radial-gradient(600px 360px at 18% 18%, rgba(129, 140, 248, 0.22), transparent 65%),
+                    radial-gradient(520px 320px at 82% 78%, rgba(96, 165, 250, 0.2), transparent 60%);
+        opacity: 0.75;
         pointer-events: none;
     }
     .auth-mode .ui-illustration > * {
@@ -757,22 +1043,18 @@ st.markdown(
         background-image: none !important;
     }
     .auth-mode .ui-card .ui-card-header {
-        position: relative;
-        margin: -26px -26px 0 -26px;
-        padding: 22px 22px;
-        background: rgba(6, 12, 28, 0.82);
-        background-image: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(251,146,60,0.14));
-        border-radius: 22px 22px 0 0;
-        border-bottom: 1px solid rgba(59,130,246,0.22);
-        backdrop-filter: blur(18px);
+        display: contents;
+        position: static;
+        margin: 0;
+        padding: 0;
+        background: transparent !important;
+        background-image: none !important;
+        border-radius: 0;
+        border-bottom: none;
+        backdrop-filter: none;
     }
     .auth-mode .ui-card .ui-card-header::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 22px 22px 0 0;
-        box-shadow: 0 0 22px rgba(59,130,246,0.2), 0 0 32px rgba(251,146,60,0.18);
-        pointer-events: none;
+        content: none;
     }
     .auth-mode .ui-card .ui-card-header h3 {
         margin: 0 !important;
@@ -994,6 +1276,27 @@ st.markdown(
         filter: brightness(1.08);
     }
 
+    /* DOM-safe global button color shift */
+    [data-testid="stButton"] button,
+    [data-testid="baseButton-primary"] button,
+    [data-testid="baseButton-secondary"] button,
+    [data-testid="baseButton-primary"] [role="button"],
+    [data-testid="baseButton-secondary"] [role="button"] {
+        background: linear-gradient(90deg, #38BDF8, #22D3EE, #A855F7, #EC4899) !important;
+        background-size: 300% 300% !important;
+        color: #FFFFFF !important;
+        animation: buttonFlow 6s cubic-bezier(0.2, 0.8, 0.2, 1) infinite !important;
+        transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease, background-position 600ms ease;
+    }
+    [data-testid="stButton"] button:hover,
+    [data-testid="baseButton-primary"] button:hover,
+    [data-testid="baseButton-secondary"] button:hover,
+    [data-testid="baseButton-primary"] [role="button"]:hover,
+    [data-testid="baseButton-secondary"] [role="button"]:hover {
+        background-position: 100% 50% !important;
+        filter: brightness(1.08) hue-rotate(12deg);
+    }
+
     @keyframes starDrift {
         0% { transform: translate3d(0, 0, 0); }
         100% { transform: translate3d(0, 140px, 0); }
@@ -1043,6 +1346,53 @@ st.markdown(
 st.markdown(
     '<div class="deploy-banner"><span>Deploy this app</span>'
     '<a class="deploy-button" href="https://share.streamlit.io" target="_blank" rel="noopener noreferrer">Deploy</a></div>',
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    '<div class="galaxy-bg">'
+    '<div class="galaxy-layer galaxy-nebula"></div>'
+    '<div class="galaxy-layer galaxy-milkyway"></div>'
+    '<div class="galaxy-layer galaxy-constellations"></div>'
+    '<div class="galaxy-layer galaxy-blackhole"></div>'
+    '<div class="galaxy-layer galaxy-rockets"></div>'
+    '<div class="galaxy-layer galaxy-stars-far"></div>'
+    '<div class="galaxy-layer galaxy-stars-mid"></div>'
+    '<div class="galaxy-layer galaxy-stars-near"></div>'
+    '<div class="galaxy-layer galaxy-dust"></div>'
+    '<div class="comet-layer">'
+    '<div class="comet comet-1"></div>'
+    '<div class="comet comet-2"></div>'
+    '<div class="comet comet-3"></div>'
+    '</div>'
+    '</div>',
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <script>
+    (function () {
+        const root = document.documentElement;
+        let tx = 0, ty = 0, cx = 0, cy = 0;
+        const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+        window.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth - 0.5;
+            const y = e.clientY / window.innerHeight - 0.5;
+            tx = clamp(x * 18, -12, 12);
+            ty = clamp(y * 18, -12, 12);
+        }, { passive: true });
+        const tick = () => {
+            cx += (tx - cx) * 0.08;
+            cy += (ty - cy) * 0.08;
+            root.style.setProperty('--mx', cx.toFixed(2));
+            root.style.setProperty('--my', cy.toFixed(2));
+            requestAnimationFrame(tick);
+        };
+        tick();
+    })();
+    </script>
+    """,
     unsafe_allow_html=True,
 )
 
@@ -1168,7 +1518,7 @@ if not st.session_state.logged_in:
         st.markdown(
             """
             <div class="ui-hero">
-                <h1>Customer Churn Prediction System</h1>
+                <h1>CUSTOMER CHURN PREDICTION SYSTEM</h1>
                 <div class="ui-underline"></div>
                 <p>A premium AI platform to predict churn, reveal segments, and turn insight into action.</p>
                 <ul class="ui-feature-list">
@@ -1177,20 +1527,25 @@ if not st.session_state.logged_in:
                     <li>Explainable intelligence leaders can trust</li>
                 </ul>
                 <div class="ui-illustration">
-                    <svg class="hero-chart" viewBox="0 0 720 320" width="100%" height="380" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                    <svg class="hero-chart" viewBox="0 0 720 320" width="100%" height="460" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
                         <defs>
                             <linearGradient id="glassBg" x1="0" y1="0" x2="1" y2="1">
                                 <stop offset="0%" stop-color="rgba(12,20,42,0.85)" />
                                 <stop offset="100%" stop-color="rgba(10,20,40,0.55)" />
                             </linearGradient>
                             <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#38BDF8" />
-                                <stop offset="55%" stop-color="#7C3AED" />
-                                <stop offset="100%" stop-color="#F97316" />
+                                <stop offset="0%" stop-color="#60A5FA" />
+                                <stop offset="55%" stop-color="#22D3EE" />
+                                <stop offset="100%" stop-color="#FDBA74" />
                             </linearGradient>
                             <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stop-color="rgba(59,130,246,0.35)" />
                                 <stop offset="100%" stop-color="rgba(59,130,246,0)" />
+                            </linearGradient>
+                            <linearGradient id="sweepGradient" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+                                <stop offset="50%" stop-color="rgba(255,255,255,0.5)" />
+                                <stop offset="100%" stop-color="rgba(255,255,255,0)" />
                             </linearGradient>
                             <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
                                 <stop offset="0%" stop-color="#93C5FD" />
@@ -1200,8 +1555,8 @@ if not st.session_state.logged_in:
                                 <rect x="34" y="56" width="652" height="210" rx="20" />
                             </clipPath>
                         </defs>
-                        <rect x="10" y="12" width="700" height="296" rx="30" fill="url(#glassBg)" stroke="rgba(99,102,241,0.45)" />
-                        <rect x="22" y="24" width="676" height="272" rx="26" fill="rgba(10,20,40,0.5)" stroke="rgba(59,130,246,0.25)" />
+                        <rect x="10" y="12" width="700" height="296" rx="30" fill="url(#glassBg)" stroke="rgba(255,255,255,0.12)" />
+                        <rect x="22" y="24" width="676" height="272" rx="26" fill="rgba(10,20,40,0.42)" stroke="rgba(255,255,255,0.08)" />
                         <g opacity="0.25">
                             <circle cx="90" cy="72" r="1" fill="#FFFFFF" />
                             <circle cx="160" cy="120" r="1" fill="#FFFFFF" />
@@ -1219,20 +1574,24 @@ if not st.session_state.logged_in:
                         <g clip-path="url(#chartClip)">
                             <path d="M70 238 L140 204 L220 214 L300 170 L380 156 L460 190 L540 142 L640 164 L640 266 L70 266 Z" fill="url(#areaFill)" />
                             <path class="line-graph" d="M70 238 L140 204 L220 214 L300 170 L380 156 L460 190 L540 142 L640 164" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            <circle class="line-dot" r="4" fill="#E0F2FE">
+                                <animateMotion dur="4s" repeatCount="indefinite" path="M70 238 L140 204 L220 214 L300 170 L380 156 L460 190 L540 142 L640 164" />
+                            </circle>
                             <circle cx="540" cy="142" r="10" fill="rgba(56,189,248,0.2)" />
                             <circle cx="540" cy="142" r="4" fill="#93C5FD" />
                             <rect class="bar bar-glow" x="88" y="182" width="38" height="86" rx="12" fill="url(#barGradient)" style="animation-delay: 0.1s" />
                             <rect class="bar" x="92" y="186" width="30" height="78" rx="12" fill="url(#barGradient)" style="animation-delay: 0.1s" />
-                            <rect class="bar bar-glow" x="150" y="164" width="38" height="104" rx="12" fill="url(#barGradient)" style="animation-delay: 0.2s" />
-                            <rect class="bar" x="154" y="168" width="30" height="96" rx="12" fill="url(#barGradient)" style="animation-delay: 0.2s" />
-                            <rect class="bar bar-glow" x="212" y="190" width="38" height="78" rx="12" fill="url(#barGradient)" style="animation-delay: 0.3s" />
-                            <rect class="bar" x="216" y="194" width="30" height="70" rx="12" fill="url(#barGradient)" style="animation-delay: 0.3s" />
-                            <rect class="bar bar-glow" x="274" y="142" width="38" height="126" rx="12" fill="url(#barGradient)" style="animation-delay: 0.4s" />
-                            <rect class="bar" x="278" y="146" width="30" height="118" rx="12" fill="url(#barGradient)" style="animation-delay: 0.4s" />
-                            <rect class="bar bar-glow" x="336" y="154" width="38" height="114" rx="12" fill="url(#barGradient)" style="animation-delay: 0.5s" />
-                            <rect class="bar" x="340" y="158" width="30" height="106" rx="12" fill="url(#barGradient)" style="animation-delay: 0.5s" />
-                            <rect class="bar bar-glow" x="398" y="186" width="38" height="82" rx="12" fill="url(#barGradient)" style="animation-delay: 0.6s" />
-                            <rect class="bar" x="402" y="190" width="30" height="74" rx="12" fill="url(#barGradient)" style="animation-delay: 0.6s" />
+                            <rect class="bar bar-glow" x="150" y="164" width="38" height="104" rx="12" fill="url(#barGradient)" style="animation-delay: 0.6s" />
+                            <rect class="bar" x="154" y="168" width="30" height="96" rx="12" fill="url(#barGradient)" style="animation-delay: 0.6s" />
+                            <rect class="bar bar-glow" x="212" y="190" width="38" height="78" rx="12" fill="url(#barGradient)" style="animation-delay: 1.1s" />
+                            <rect class="bar" x="216" y="194" width="30" height="70" rx="12" fill="url(#barGradient)" style="animation-delay: 1.1s" />
+                            <rect class="bar bar-glow" x="274" y="142" width="38" height="126" rx="12" fill="url(#barGradient)" style="animation-delay: 1.6s" />
+                            <rect class="bar" x="278" y="146" width="30" height="118" rx="12" fill="url(#barGradient)" style="animation-delay: 1.6s" />
+                            <rect class="bar bar-glow" x="336" y="154" width="38" height="114" rx="12" fill="url(#barGradient)" style="animation-delay: 2.1s" />
+                            <rect class="bar" x="340" y="158" width="30" height="106" rx="12" fill="url(#barGradient)" style="animation-delay: 2.1s" />
+                            <rect class="bar bar-glow" x="398" y="186" width="38" height="82" rx="12" fill="url(#barGradient)" style="animation-delay: 2.6s" />
+                            <rect class="bar" x="402" y="190" width="30" height="74" rx="12" fill="url(#barGradient)" style="animation-delay: 2.6s" />
+                            <rect class="bar-sweep" x="50" y="70" width="620" height="210" fill="url(#sweepGradient)" />
                         </g>
                         <g stroke="rgba(147,197,253,0.5)" stroke-width="1.5">
                             <line x1="120" y1="86" x2="180" y2="120" />
@@ -1260,9 +1619,7 @@ if not st.session_state.logged_in:
 
     with col2:
         st.markdown('<div class="ui-card">', unsafe_allow_html=True)
-        st.markdown('<div class="ui-card-header">', unsafe_allow_html=True)
         st.markdown('<h3>Welcome Back</h3>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('<div class="ui-card-body">', unsafe_allow_html=True)
         st.markdown('<p>Login to your account</p>', unsafe_allow_html=True)
         auth_mode = st.session_state.auth_mode
@@ -1271,7 +1628,7 @@ if not st.session_state.logged_in:
             with st.form('login_form'):
                 login_username = st.text_input('Username')
                 login_password = st.text_input('Password', type='password')
-                login_btn = st.form_submit_button('Login')
+                login_btn = st.form_submit_button('Login', key='login_btn')
 
             if login_btn:
                 user = authenticate_user(login_username, login_password)
@@ -1287,7 +1644,7 @@ if not st.session_state.logged_in:
             st.markdown('<div class="ui-link"><a href="#">Forgot password?</a></div>', unsafe_allow_html=True)
             st.markdown('<div class="ui-card-body-actions">', unsafe_allow_html=True)
             st.markdown('<span>Not a member?</span>', unsafe_allow_html=True)
-            if st.button('Register here', key='register_link', type='secondary'):
+            if st.button('Register here', key='register_btn', type='secondary'):
                 st.session_state.auth_mode = 'Register'
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
