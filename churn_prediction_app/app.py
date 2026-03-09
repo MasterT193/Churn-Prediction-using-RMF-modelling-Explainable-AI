@@ -440,6 +440,9 @@ st.markdown(
         backdrop-filter: blur(16px);
         position: relative;
         overflow: hidden;
+        max-width: 920px;
+        margin-left: auto;
+        margin-right: auto;
     }
     section.main [data-testid="stPyplot"]::after,
     section.main [data-testid="stPlotlyChart"]::after,
@@ -1755,14 +1758,22 @@ if uploaded_file:
         with tab2:
             st.write('### RFM Feature Distributions')
             st.caption('These histograms show the distribution of Recency, Frequency, and Monetary values across all customers.')
-            fig_rfm, axs = plt.subplots(1, 3, figsize=(15, 4))
-            axs[0].hist(rfm['Recency'], bins=20, color='skyblue')
-            axs[0].set_title('Recency')
-            axs[1].hist(rfm['Frequency'], bins=20, color='lightgreen')
-            axs[1].set_title('Frequency')
-            axs[2].hist(rfm['Monetary'], bins=20, color='salmon')
-            axs[2].set_title('Monetary')
-            st.pyplot(fig_rfm)
+            rfm_cols = st.columns(3)
+            with rfm_cols[0]:
+                fig_rfm_recency, ax_rfm_recency = plt.subplots(figsize=(4.4, 3.2))
+                ax_rfm_recency.hist(rfm['Recency'], bins=20, color='skyblue')
+                ax_rfm_recency.set_title('Recency')
+                st.pyplot(fig_rfm_recency, use_container_width=False)
+            with rfm_cols[1]:
+                fig_rfm_frequency, ax_rfm_frequency = plt.subplots(figsize=(4.4, 3.2))
+                ax_rfm_frequency.hist(rfm['Frequency'], bins=20, color='lightgreen')
+                ax_rfm_frequency.set_title('Frequency')
+                st.pyplot(fig_rfm_frequency, use_container_width=False)
+            with rfm_cols[2]:
+                fig_rfm_monetary, ax_rfm_monetary = plt.subplots(figsize=(4.4, 3.2))
+                ax_rfm_monetary.hist(rfm['Monetary'], bins=20, color='salmon')
+                ax_rfm_monetary.set_title('Monetary')
+                st.pyplot(fig_rfm_monetary, use_container_width=False)
             st.markdown(
                 "- **Recency**: Lower values mean recent purchases; higher values indicate longer time since last purchase.\n"
                 "- **Frequency**: Higher values mean more invoices (more frequent purchases).\n"
@@ -1783,13 +1794,13 @@ if uploaded_file:
             st.dataframe(rfm.head())
             st.write('### Cluster Scatterplot (Recency vs Monetary)')
             st.caption('Each point is a customer, colored by their cluster. This helps visualize how clusters separate based on Recency and Monetary value.')
-            fig_scatter, ax_scatter = plt.subplots()
+            fig_scatter, ax_scatter = plt.subplots(figsize=(6.5, 4.2))
             scatter = ax_scatter.scatter(rfm['Recency'], rfm['Monetary'], c=rfm['KMeans_Cluster'], cmap='tab10', alpha=0.7)
             legend1 = ax_scatter.legend(*scatter.legend_elements(), title="KMeans Cluster")
             ax_scatter.add_artist(legend1)
             ax_scatter.set_xlabel('Recency')
             ax_scatter.set_ylabel('Monetary')
-            st.pyplot(fig_scatter)
+            st.pyplot(fig_scatter, use_container_width=False)
             st.markdown(
                 "This scatter shows customers by **Recency** (x-axis) and **Monetary** (y-axis), colored by KMeans cluster.\n"
                 "- Points to the right (higher Recency) are less recent customers.\n"
@@ -1803,11 +1814,11 @@ if uploaded_file:
             cluster_counts = rfm['KMeans_Cluster'].value_counts().sort_index()
             st.write('### Number of Customers per KMeans Cluster')
             st.caption('This bar chart shows how many customers are in each cluster.')
-            fig_bar, ax_bar = plt.subplots()
+            fig_bar, ax_bar = plt.subplots(figsize=(6.2, 3.8))
             ax_bar.bar(cluster_counts.index.astype(str), cluster_counts.values, color='orchid')
             ax_bar.set_xlabel('KMeans Cluster')
             ax_bar.set_ylabel('Number of Customers')
-            st.pyplot(fig_bar)
+            st.pyplot(fig_bar, use_container_width=False)
             st.markdown(
                 "This bar chart shows how many customers fall into each KMeans cluster.\n"
                 "Use this to gauge the size of segments (e.g., whether the high-risk cluster is small and targeted or large and widespread)."
@@ -1856,9 +1867,9 @@ if uploaded_file:
             st.info('SHAP (SHapley Additive exPlanations) explains which RFM features are most important for assigning customers to clusters, helping you understand the drivers of churn risk.')
             explainer = shap.KernelExplainer(kmeans.predict, rfm_scaled)
             shap_values = explainer.shap_values(rfm_scaled[:50])
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(6.2, 3.8))
             shap.summary_plot(shap_values, rfm.iloc[:50, :3], show=False)
-            st.pyplot(fig)
+            st.pyplot(fig, use_container_width=False)
             st.markdown(
                 "The SHAP summary ranks features by their contribution to cluster assignment.\n"
                 "- Larger absolute SHAP values mean stronger influence.\n"
